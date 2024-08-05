@@ -1,0 +1,3 @@
+/Users/lucassotomayor-rvb/testPistache/build/CMakeFiles/TodoApp.dir
+/Users/lucassotomayor-rvb/testPistache/build/CMakeFiles/edit_cache.dir
+/Users/lucassotomayor-rvb/testPistache/build/CMakeFiles/rebuild_cache.dir
