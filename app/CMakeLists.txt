@@ -1,6 +1,6 @@
 cmake_minimum_required(VERSION 3.10)
 
-project(TodoApp)
+project(app)
 
 # Specify C++ standard
 set(CMAKE_CXX_STANDARD 17)
@@ -20,7 +20,7 @@ set(SOURCES
 )
 
 # Crear el ejecutable
-add_executable(TodoApp ${SOURCES})
+add_executable(app ${SOURCES})
 
 # Enlazar las bibliotecas de Pistache
-target_link_libraries(TodoApp pistache)
+target_link_libraries(app pistache)
