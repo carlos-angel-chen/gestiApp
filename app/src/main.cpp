@@ -21,38 +21,58 @@
 //     return 0;
 // }
 
+#include <pistache/endpoint.h>
+#include <pistache/router.h>
+#include <pistache/http_headers.h>
+#include "routes/Routes.h"
 #include "database/DatabaseConnection.h"
-#include <iostream>
+
+using namespace Pistache;
+using namespace Pistache::Rest;
+
+// Función para manejar las solicitudes OPTIONS (CORS Preflight)
+void handleOptions(const Rest::Request& request, Http::ResponseWriter response) {
+    response.headers()
+        .add<Http::Header::AccessControlAllowOrigin>("*")
+        .add<Http::Header::AccessControlAllowMethods>("GET, POST, PUT, DELETE, OPTIONS")
+        .add<Http::Header::AccessControlAllowHeaders>("Content-Type, Accept");
+    response.send(Http::Code::Ok);
+}
 
 int main() {
-    // Definir la cadena de conexión a la base de datos
+    // Configuración de la conexión a la base de datos
     std::string connectionString = "dbname=postgres user=postgres password=adminadmin hostaddr=127.0.0.1 port=5432";
-
-    // Crear una instancia de la clase DatabaseConnection
     DatabaseConnection dbConn(connectionString);
 
-    // Intentar conectarse a la base de datos
-    if (!dbConn.connect()){
+    if (!dbConn.connect()) {
         std::cerr << "Error al conectar a la base de datos." << std::endl;
-        return 1;
-    }
-    // Mientras necesites la conexion, sigue operando
-    if (dbConn.isConnected()) {
-        // Realizar opeaciones con l abase de datos aqui
-
-        // Ejemplo
-        try{
-            pqxx::work txn(*dbConn.getConnection());
-            pqxx::result res = txn.exec("SELECT * FROM public.\"Productos\"");
-            for (auto row : res){
-                std::cout << "Producto: " << row["id"].c_str() << " | " << row["\"SKU\""].c_str() << " | " << row["nombre"].c_str() << std::endl;
-            }
-            txn.commit();
-        } catch(const std::exception &e){
-            std::cerr << "Error al realizar la consulta: " << e.what() << std::endl;
-        } 
+        return 1;  // Salir si la conexión falla
     }
 
+    // Configurar el servidor Pistache
+    Port port(9080);
+    int thr = 2;  // Número de hilos (threads) para manejar solicitudes
+    Address addr(Ipv4::any(), port);
+
+    Http::Endpoint server(addr);
+    auto opts = Http::Endpoint::options().threads(thr);
+    server.init(opts);
+
+    // Configurar las rutas
+    Rest::Router router;
+
+    // Manejar solicitudes OPTIONS para CORS
+    Routes::Options(router, "/productos", Routes::bind(&handleOptions));
+
+    setupRoutes(router, dbConn);
+
+    // Iniciar el servidor con las rutas configuradas
+    server.setHandler(router.handler());
+    std::cout << "Servidor iniciado en http://localhost:" << port << std::endl;
+    server.serve();
+
+    // Desconectar la base de datos antes de salir
     dbConn.disconnect();
+
     return 0;
 }

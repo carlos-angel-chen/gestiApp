@@ -1,0 +1,82 @@
+CREATE TABLE "Ventas" (
+	"id" SERIAL NOT NULL UNIQUE,
+	"id_cliente" INTEGER,
+	"id_pedido" INTEGER,
+	"id_logistica" INTEGER,
+	"fecha" TIMESTAMP,
+	"subtotal" DECIMAL,
+	"descuento" DECIMAL,
+	"precio_final" DECIMAL,
+	"id_metodo_pago" INTEGER,
+	PRIMARY KEY("id")
+);
+
+
+CREATE TABLE "Clientes" (
+	"id" SERIAL NOT NULL UNIQUE,
+	"razon_social" VARCHAR,
+	"CUIT" INTEGER,
+	"tributacion" VARCHAR,
+	"telefono" INTEGER,
+	"email" VARCHAR,
+	PRIMARY KEY("id")
+);
+
+
+CREATE TABLE "Productos" (
+	"id" SERIAL NOT NULL UNIQUE,
+	"SKU" INTEGER,
+	"nombre" VARCHAR,
+	"id_marca" VARCHAR,
+	"stock_minimo" INTEGER,
+	"stock_actual" INTEGER,
+	"id_tipo" INTEGER,
+	PRIMARY KEY("id")
+);
+
+
+CREATE TABLE "Precios" (
+	"id" SERIAL NOT NULL UNIQUE,
+	"id_producto" INTEGER,
+	"costo" DECIMAL,
+	"precio_venta" DECIMAL,
+	"precio_sin_IVA" DECIMAL,
+	"precio_con_iva" DECIMAL,
+	"precio_minorista" DECIMAL,
+	"precio_mayorista" DECIMAL,
+	"usd" DECIMAL,
+	"pesos" DECIMAL,
+	PRIMARY KEY("id")
+);
+
+
+CREATE TABLE "Logistica" (
+	"id" SERIAL NOT NULL UNIQUE,
+	"razon_social" VARCHAR,
+	"CUIT" INTEGER,
+	"direccion" VARCHAR,
+	"tipo" VARCHAR,
+	PRIMARY KEY("id")
+);
+
+
+CREATE TABLE "Pedidos" (
+	"id" INTEGER NOT NULL UNIQUE,
+	"id_producto" INTEGER,
+	"cantidad" INTEGER,
+	PRIMARY KEY("id")
+);
+
+
+CREATE TABLE "TipoProductos" (
+	"id" SERIAL NOT NULL UNIQUE,
+	"nombre" VARCHAR,
+	PRIMARY KEY("id")
+);
+
+
+CREATE TABLE "MetodoPagos" (
+	"id" SERIAL NOT NULL UNIQUE,
+	"nombre" VARCHAR,
+	PRIMARY KEY("id")
+);

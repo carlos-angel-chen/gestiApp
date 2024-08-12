@@ -1,4 +1,4 @@
-#include "DatabaseConnection.h"
+#include "../include/database/DatabaseConnection.h"
 #include <iostream>
 
 DatabaseConnection::DatabaseConnection(const std::string& connStr) : connectionString(connStr), conn(nullptr) {}

@@ -1,0 +1,59 @@
+/tu_proyecto
+│
+├── /build/                 # Carpeta para archivos de compilación y ejecutables
+├── /src/                   # Código fuente
+│   ├── /controllers/       # Controladores de la API
+│   │   ├── ClienteController.cpp
+│   │   └── ProductoController.cpp
+│   │   └── ...
+│   ├── /models/            # Clases que representan las entidades de negocio (POO)
+│   │   ├── Cliente.cpp
+│   │   ├── Producto.cpp
+│   │   └── ...
+│   ├── /database/          # Código relacionado con la conexión a la base de datos
+│   │   ├── DatabaseConnection.cpp
+│   │   └── DatabaseConnection.h
+│   ├── /services/          # Lógica de negocio y servicios auxiliares
+│   │   ├── ClienteService.cpp
+│   │   └── ProductoService.cpp
+│   │   └── ...
+│   ├── /routes/            # Definición de rutas del API
+│   │   ├── Routes.cpp
+│   │   └── Routes.h
+│   ├── /utils/             # Utilidades generales
+│   │   ├── JsonUtils.cpp
+│   │   └── Logger.cpp
+│   └── main.cpp            # Punto de entrada de la aplicación
+│
+├── /include/               # Archivos de cabecera
+│   ├── /controllers/       # Headers de los controladores
+│   │   ├── ClienteController.h
+│   │   └── ProductoController.h
+│   ├── /models/            # Headers de las clases modelo
+│   │   ├── Cliente.h
+│   │   ├── Producto.h
+│   │   └── ...
+│   ├── /database/          # Headers para la conexión a la base de datos
+│   │   ├── DatabaseConnection.h
+│   └── /services/          # Headers para los servicios
+│       ├── ClienteService.h
+│       └── ProductoService.h
+│
+├── /config/                # Archivos de configuración
+│   └── config.json         # Configuración del proyecto (e.g., conexión a DB)
+│
+├── /tests/                 # Pruebas unitarias y de integración
+│   ├── /unit/              # Pruebas unitarias
+│   └── /integration/       # Pruebas de integración
+│
+├── /scripts/               # Scripts útiles (compilación, despliegue, etc.)
+│   ├── build.sh
+│   └── deploy.sh
+│
+├── /docker/                # Archivos de configuración para Docker
+│   ├── Dockerfile
+│   └── docker-compose.yml
+│
+├── .gitignore              # Ignorar archivos/carpetas en Git
+├── CMakeLists.txt          # Archivo CMake para configuración del proyecto
+└── README.md               # Documentación del proyecto

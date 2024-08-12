@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Test Productos API</title>
+    <script>
+        async function getAllProductos() {
+            try {
+                const response = await fetch('http://localhost:9080/productos');
+                const data = await response.json();
+                document.getElementById('output').textContent = JSON.stringify(data, null, 2);
+            } catch (error) {
+                console.error('Error:', error);
+            }
+        }
+
+        async function getProductoById() {
+            const id = document.getElementById('productoId').value;
+            try {
+                const response = await fetch(`http://localhost:9080/productos/${id}`);
+                const data = await response.json();
+                document.getElementById('output').textContent = JSON.stringify(data, null, 2);
+            } catch (error) {
+                console.error('Error:', error);
+            }
+        }
+
+        async function createProducto() {
+            const sku = document.getElementById('sku').value;
+            const nombre = document.getElementById('nombre').value;
+
+            try {
+                const response = await fetch('http://localhost:9080/productos', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ SKU: sku, nombre: nombre })
+                });
+                const data = await response.json();
+                document.getElementById('output').textContent = JSON.stringify(data, null, 2);
+            } catch (error) {
+                console.error('Error:', error);
+            }
+        }
+
+        async function deleteProductoById() {
+            const id = document.getElementById('productoId').value;
+            try {
+                const response = await fetch(`http://localhost:9080/productos/${id}`, {
+                    method: 'DELETE'
+                });
+                document.getElementById('output').textContent = `Producto con ID ${id} eliminado.`;
+            } catch (error) {
+                console.error('Error:', error);
+            }
+        }
+    </script>
+</head>
+<body>
+    <h1>Test Productos API</h1>
+
+    <button onclick="getAllProductos()">Obtener Todos los Productos</button>
+    <br><br>
+
+    <input type="text" id="productoId" placeholder="ID del Producto">
+    <button onclick="getProductoById()">Obtener Producto por ID</button>
+    <br><br>
+
+    <input type="text" id="sku" placeholder="SKU">
+    <input type="text" id="nombre" placeholder="Nombre del Producto">
+    <button onclick="createProducto()">Crear Producto</button>
+    <br><br>
+
+    <button onclick="deleteProductoById()">Eliminar Producto por ID</button>
+    <br><br>
+
+    <pre id="output"></pre>
+</body>
+</html>
