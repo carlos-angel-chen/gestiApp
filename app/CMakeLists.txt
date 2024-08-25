@@ -20,11 +20,14 @@ pkg_check_modules(LIBPQXX REQUIRED libpqxx)
 include_directories(${LIBPQXX_INCLUDE_DIRS})
 link_directories(${LIBPQXX_LIBRARY_DIRS})
 
+# Incluir la biblioteca nlohmann::json (instalada en el sistema)
+find_package(nlohmann_json 3.2.0 REQUIRED)
+
 # Crear el ejecutable
 add_executable(app ${SOURCES})
 
-# Enlazar las bibliotecas de Pistache
-target_link_libraries(app pistache ${LIBPQXX_LIBRARIES})
+# Enlazar las bibliotecas de Pistache, libpqxx y nlohmann::json
+target_link_libraries(app pistache ${LIBPQXX_LIBRARIES} nlohmann_json::nlohmann_json)
 
 
 

@@ -3,8 +3,57 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Test Productos API</title>
+    <title>Gestión de Productos</title>
     <script>
+        // Obtener todas las columnas de la tabla Productos y generar un formulario dinámico
+        async function getColumns() {
+            try {
+                const response = await fetch('http://localhost:9080/productos/columns');
+                const columns = await response.json();
+
+                const form = document.getElementById('productForm');
+                form.innerHTML = "";  // Limpiar el formulario antes de regenerarlo
+                columns.forEach(column => {
+                    const label = document.createElement('label');
+                    if (column !== 'id'){
+                        label.textContent = column;
+                        const input = document.createElement('input');
+                        input.type = 'text';
+                        input.name = column;
+                        form.appendChild(label);
+                        form.appendChild(input);
+                        form.appendChild(document.createElement('br'));
+                    }
+                });
+            } catch (error) {
+                console.error('Error al obtener columnas:', error);
+            }
+        }
+
+        // Crear un nuevo producto desde el formulario
+        async function submitForm() {
+            const form = document.getElementById('productForm');
+            const formData = new FormData(form);
+
+            const json = {};
+            formData.forEach((value, key) => {
+                json[key] = value;
+            });
+
+            try {
+                const response = await fetch('http://localhost:9080/productos', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(json)
+                });
+                const result = await response.text();
+                document.getElementById('output').textContent = result;
+            } catch (error) {
+                console.error('Error al agregar producto:', error);
+            }
+        }
+
+        // Obtener todos los productos
         async function getAllProductos() {
             try {
                 const response = await fetch('http://localhost:9080/productos');
@@ -15,6 +64,7 @@
             }
         }
 
+        // Obtener un producto por ID
         async function getProductoById() {
             const id = document.getElementById('productoId').value;
             try {
@@ -26,25 +76,10 @@
             }
         }
 
-        async function createProducto() {
-            const sku = document.getElementById('sku').value;
-            const nombre = document.getElementById('nombre').value;
-
-            try {
-                const response = await fetch('http://localhost:9080/productos', {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ SKU: sku, nombre: nombre })
-                });
-                const data = await response.json();
-                document.getElementById('output').textContent = JSON.stringify(data, null, 2);
-            } catch (error) {
-                console.error('Error:', error);
-            }
-        }
-
+        // Eliminar un producto por ID
         async function deleteProductoById() {
-            const id = document.getElementById('productoId').value;
+            const id = document.getElementById('productoIdDelete').value;
+            console.log(id);
             try {
                 const response = await fetch(`http://localhost:9080/productos/${id}`, {
                     method: 'DELETE'
@@ -54,26 +89,60 @@
                 console.error('Error:', error);
             }
         }
+
+        // Eliminar un producto por ID
+        async function deleteProductoBySKU() {
+            const sku = document.getElementById('productoIdDeleteSKU').value;
+            console.log(sku);
+            try {
+                const response = await fetch(`http://localhost:9080/productos/SKU/${sku}`, {
+                    method: 'DELETE'
+                });
+                document.getElementById('output').textContent = `Producto con SKU ${sku} eliminado.`;
+            } catch (error) {
+                console.error('Error:', error);
+            }
+        }
+
+        // Llamar a getColumns cuando se carga la página
+        window.onload = getColumns;
     </script>
 </head>
 <body>
-    <h1>Test Productos API</h1>
+    <h1>Gestión de Productos</h1>
 
+    <!-- Formulario para agregar un producto dinámicamente -->
+    <h2>Agregar Producto</h2>
+    <form id="productForm">
+        <!-- Los campos del formulario se generarán dinámicamente -->
+    </form>
+    <button onclick="submitForm()">Agregar Producto</button>
+    <br><br>
+
+    <!-- Funcionalidades adicionales para interactuar con la API -->
+    <h2>Operaciones CRUD</h2>
+
+    <!-- Obtener todos los productos -->
     <button onclick="getAllProductos()">Obtener Todos los Productos</button>
     <br><br>
 
+    <!-- Obtener producto por ID -->
     <input type="text" id="productoId" placeholder="ID del Producto">
     <button onclick="getProductoById()">Obtener Producto por ID</button>
     <br><br>
 
-    <input type="text" id="sku" placeholder="SKU">
-    <input type="text" id="nombre" placeholder="Nombre del Producto">
-    <button onclick="createProducto()">Crear Producto</button>
-    <br><br>
-
+    <!-- Eliminar producto por ID -->
+     <input type="text" id="productoIdDelete" placeholder="ID del Producto">
     <button onclick="deleteProductoById()">Eliminar Producto por ID</button>
     <br><br>
 
+    <!-- Eliminar producto por SKU -->
+    <input type="text" id="productoIdDeleteSKU" placeholder="SKU del Producto">
+    <button onclick="deleteProductoBySKU()">Eliminar Producto por SKU</button>
+    <br><br>
+
+    <!-- Mostrar resultado de las operaciones -->
     <pre id="output"></pre>
+
 </body>
 </html>

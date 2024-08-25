@@ -30,14 +30,14 @@
 using namespace Pistache;
 using namespace Pistache::Rest;
 
-// Función para manejar las solicitudes OPTIONS (CORS Preflight)
-void handleOptions(const Rest::Request& request, Http::ResponseWriter response) {
-    response.headers()
-        .add<Http::Header::AccessControlAllowOrigin>("*")
-        .add<Http::Header::AccessControlAllowMethods>("GET, POST, PUT, DELETE, OPTIONS")
-        .add<Http::Header::AccessControlAllowHeaders>("Content-Type, Accept");
-    response.send(Http::Code::Ok);
-}
+// // Función para manejar las solicitudes OPTIONS (CORS Preflight)
+// void handleOptions(const Rest::Request& request, Http::ResponseWriter response) {
+//     response.headers()
+//         .add<Http::Header::AccessControlAllowOrigin>("*")
+//         .add<Http::Header::AccessControlAllowMethods>("GET, POST, PUT, DELETE, OPTIONS")
+//         .add<Http::Header::AccessControlAllowHeaders>("Content-Type, Accept");
+//     response.send(Http::Code::Ok);
+// }
 
 int main() {
     // Configuración de la conexión a la base de datos
@@ -62,7 +62,7 @@ int main() {
     Rest::Router router;
 
     // Manejar solicitudes OPTIONS para CORS
-    Routes::Options(router, "/productos", Routes::bind(&handleOptions));
+    // Routes::Options(router, "/productos", Routes::bind(&handleOptions));
 
     setupRoutes(router, dbConn);
 

@@ -15,7 +15,9 @@ public:
     void getProductoById(const Rest::Request& request, Http::ResponseWriter response);
     void createProducto(const Rest::Request& request, Http::ResponseWriter response);
     void updateProducto(const Rest::Request& request, Http::ResponseWriter response);
-    void deleteProducto(const Rest::Request& request, Http::ResponseWriter response);
+    void deleteProductoById(const Rest::Request& request, Http::ResponseWriter response);
+    void getColumns(const Rest::Request& request, Http::ResponseWriter response);
+    void deleteProductoBySKU(const Rest::Request& request, Http::ResponseWriter response);
 
 private:
     DatabaseConnection& dbConn;
