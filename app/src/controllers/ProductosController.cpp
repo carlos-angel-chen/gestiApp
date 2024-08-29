@@ -32,7 +32,7 @@ void ProductosController::getAllProducts(const Rest::Request& request, Http::Res
     }
 }
 
-void ProductosController::getProductoById(const Rest::Request& request, Http::ResponseWriter response) {
+void ProductosController::getProductById(const Rest::Request& request, Http::ResponseWriter response) {
     auto id = request.param(":id").as<int>();
     try {
         auto producto = productService.getProductById(id);
@@ -48,11 +48,32 @@ void ProductosController::getProductoById(const Rest::Request& request, Http::Re
             .add<Http::Header::AccessControlAllowOrigin>("*")
             .add<Http::Header::AccessControlAllowMethods>("GET, POST, PUT, DELETE, OPTIONS")
             .add<Http::Header::AccessControlAllowHeaders>("Content-Type, Accept");
-        response.send(Http::Code::Not_Found, "Producto no encontrado");
+        response.send(Http::Code::Not_Found, "Producto no encontrado por ID");
     }
 }
 
-void ProductosController::createProducto(const Rest::Request& request, Http::ResponseWriter response) {
+void ProductosController::getProductBySKU(const Rest::Request& request, Http::ResponseWriter response){
+    auto sku = request.param(":sku").as<std::string>();
+    try{
+        auto producto = productService.getProductBySKU(sku);
+        json jsonResponse = producto;
+        response.headers()
+            .add<Http::Header::AccessControlAllowOrigin>("*")
+            .add<Http::Header::AccessControlAllowMethods>("GET, POST, PUT, DELETE, OPTIONS")
+            .add<Http::Header::AccessControlAllowHeaders>("Content-Type, Accept");
+        response.send(Http::Code::Ok, jsonResponse.dump());
+    }
+    catch(const std::exception& e){
+        // Encabezados CORS en caso de error también
+        response.headers()
+            .add<Http::Header::AccessControlAllowOrigin>("*")
+            .add<Http::Header::AccessControlAllowMethods>("GET, POST, PUT, DELETE, OPTIONS")
+            .add<Http::Header::AccessControlAllowHeaders>("Content-Type, Accept");
+        response.send(Http::Code::Not_Found, "Producto no encontrado por SKU");
+    }
+}
+
+void ProductosController::createProduct(const Rest::Request& request, Http::ResponseWriter response) {
     try {
         auto jsonBody = json::parse(request.body());
         Productos producto = {
@@ -80,7 +101,7 @@ void ProductosController::createProducto(const Rest::Request& request, Http::Res
     }
 }
 
-void ProductosController::updateProducto(const Rest::Request& request, Http::ResponseWriter response) {
+void ProductosController::updateProduct(const Rest::Request& request, Http::ResponseWriter response) {
     try {
         auto jsonBody = json::parse(request.body());
         Productos producto = {
@@ -109,7 +130,7 @@ void ProductosController::updateProducto(const Rest::Request& request, Http::Res
     }
 }
 
-void ProductosController::deleteProductoById(const Rest::Request& request, Http::ResponseWriter response) {
+void ProductosController::deleteProductById(const Rest::Request& request, Http::ResponseWriter response) {
     auto id = request.param(":id").as<int>();
     try {
         productService.deleteProductById(id);
@@ -128,7 +149,7 @@ void ProductosController::deleteProductoById(const Rest::Request& request, Http:
     }
 }
 
-void ProductosController::deleteProductoBySKU(const Rest::Request& request, Http::ResponseWriter response) {
+void ProductosController::deleteProductBySKU(const Rest::Request& request, Http::ResponseWriter response) {
     auto sku = request.param(":sku").as<std::string>();
     try {
         productService.deleteProductBySKU(sku);

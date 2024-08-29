@@ -13,12 +13,13 @@ public:
     explicit ProductosController(DatabaseConnection& db);
 
     void getAllProducts(const Rest::Request& request, Http::ResponseWriter response);
-    void getProductoById(const Rest::Request& request, Http::ResponseWriter response);
-    void createProducto(const Rest::Request& request, Http::ResponseWriter response);
-    void updateProducto(const Rest::Request& request, Http::ResponseWriter response);
-    void deleteProductoById(const Rest::Request& request, Http::ResponseWriter response);
+    void getProductById(const Rest::Request& request, Http::ResponseWriter response);
+    void getProductBySKU(const Rest::Request& request, Http::ResponseWriter response);
+    void createProduct(const Rest::Request& request, Http::ResponseWriter response);
+    void updateProduct(const Rest::Request& request, Http::ResponseWriter response);
+    void deleteProductById(const Rest::Request& request, Http::ResponseWriter response);
     void getColumns(const Rest::Request& request, Http::ResponseWriter response);
-    void deleteProductoBySKU(const Rest::Request& request, Http::ResponseWriter response);
+    void deleteProductBySKU(const Rest::Request& request, Http::ResponseWriter response);
 
 private:
     DatabaseConnection& dbConn;

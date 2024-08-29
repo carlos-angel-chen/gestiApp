@@ -125,6 +125,18 @@
             }
         }
 
+        // Obtener un producto por SKU
+        async function getProductoBySKU() {
+            const sku = document.getElementById('productoSKU').value;
+            try {
+                const response = await fetch(`http://localhost:9080/productos/${sku}`);
+                const data = await response.json();
+                document.getElementById('output').textContent = JSON.stringify(data, null, 2);
+            } catch (error) {
+                console.error('Error:', error);
+            }
+        }
+
         // Eliminar un producto por ID
         async function deleteProductoById() {
             const id = document.getElementById('productoIdDelete').value;
@@ -188,6 +200,11 @@
     <!-- Obtener producto por ID -->
     <input type="text" id="productoId" placeholder="ID del Producto">
     <button onclick="getProductoById()">Obtener Producto por ID</button>
+    <br><br>
+
+    <!-- Obtener producto por SKU -->
+    <input type="text" id="productoSKU" placeholder="SKU del Producto">
+    <button onclick="getProductoBySKU()">Obtener Producto por SKU</button>
     <br><br>
 
     <!-- Eliminar producto por ID -->

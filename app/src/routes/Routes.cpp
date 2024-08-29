@@ -17,11 +17,12 @@ void setupRoutes(Pistache::Rest::Router& router, DatabaseConnection& dbConn) {
 
     // Revisa que no estés registrando las rutas más de una vez
     Routes::Get(router, "/productos", Routes::bind(&ProductosController::getAllProducts, productosController));
-    Routes::Get(router, "/productos/:id", Routes::bind(&ProductosController::getProductoById, productosController));
-    Routes::Post(router, "/productos", Routes::bind(&ProductosController::createProducto, productosController));
-    Routes::Put(router, "/productos/:id", Routes::bind(&ProductosController::updateProducto, productosController));
-    Routes::Delete(router, "/productos/:id", Routes::bind(&ProductosController::deleteProductoById, productosController));
-    Routes::Delete(router, "/productos/SKU/:sku", Routes::bind(&ProductosController::deleteProductoBySKU, productosController));
+    Routes::Get(router, "/productos/:id", Routes::bind(&ProductosController::getProductById, productosController));
+    Routes::Get(router, "/productos/:sku", Routes::bind(&ProductosController::getProductBySKU, productosController));
+    Routes::Post(router, "/productos", Routes::bind(&ProductosController::createProduct, productosController));
+    Routes::Put(router, "/productos/:id", Routes::bind(&ProductosController::updateProduct, productosController));
+    Routes::Delete(router, "/productos/:id", Routes::bind(&ProductosController::deleteProductById, productosController));
+    Routes::Delete(router, "/productos/SKU/:sku", Routes::bind(&ProductosController::deleteProductBySKU, productosController));
     Routes::Get(router, "/productos/columns", Routes::bind(&ProductosController::getColumns, productosController));
 
     // Asegúrate de no duplicar las rutas OPTIONS

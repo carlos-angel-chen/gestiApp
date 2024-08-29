@@ -47,6 +47,8 @@ Productos ProductosService::getProductById(int id) {
             row["stock_actual"].is_null() ? std::nullopt : std::optional<std::string>(row["stock_actual"].as<std::string>()),
             row["id_tipo"].is_null() ? std::nullopt : std::optional<std::string>(row["id_tipo"].as<std::string>())
         };
+
+        txn.commit();
         return p;
     }
     catch (const std::exception& e) {
@@ -54,7 +56,33 @@ Productos ProductosService::getProductById(int id) {
         throw;  // Lanza la excepción para que sea capturada por el controlador
     }
 }
-    
+
+Productos ProductosService::getProductBySKU(const std::string& sku){
+    try{
+        pqxx::work txn(*dbConn.getConnection());
+        pqxx::result res = txn.exec("SELECT * FROM public.\"Productos\" WHERE \"SKU\" = " + txn.quote(sku));
+
+        if (res.size() != 1) {
+            throw std::runtime_error("Producto no encontrado");
+        }
+
+        auto row = res[0];
+        Productos p = {
+            row["id"].as<int>(),
+            row["\"SKU\""].as<std::string>(),
+            row["nombre"].as<std::string>(),
+            row["stock_minimo"].is_null() ? std::nullopt : std::optional<std::string>(row["stock_minimo"].as<std::string>()),
+            row["stock_actual"].is_null() ? std::nullopt : std::optional<std::string>(row["stock_actual"].as<std::string>()),
+            row["id_tipo"].is_null() ? std::nullopt : std::optional<std::string>(row["id_tipo"].as<std::string>())
+        };
+        txn.commit();
+        return p;
+    }
+    catch(const std::exception& e){
+        std::cerr << "Error al obtener producto: " << e.what() << std::endl;
+        throw;  // Lanza la excepción para que sea capturada por el controlador
+    }
+}
 
 void ProductosService::createProduct(const Productos& productos) {
     try{
