@@ -5,6 +5,55 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Gestión de Productos</title>
     <script>
+        // Obtener todas las columnas de la tabla Productos y generar un formulario dinámico para actualizar producto
+        async function getColumnsUpdate(){
+            try{
+                const response = await fetch('http://localhost:9080/productos/columns');
+                const columns = await response.json();
+
+                const form = document.getElementById('productFormUpdate');
+                form.innerHTML = "";  // Limpiar el formulario antes de regenerarlo
+                columns.forEach(column => {
+                    const label = document.createElement('label');
+                    if (column !== 'id'){
+                        label.textContent = column;
+                        const input = document.createElement('input');
+                        input.type = 'text';
+                        input.name = column;
+                        form.appendChild(label);
+                        form.appendChild(input);
+                        form.appendChild(document.createElement('br'));
+                    }
+                });
+            } catch (error) {
+                console.error('Error al obtener columnas:', error);
+            }
+        }
+
+        // Actualizar un producto desde el formulario
+        async function submitFormUpdate() {
+            const form = document.getElementById('productFormUpdate');
+            const formData = new FormData(form);
+            const id = document.getElementById('updateProductoId').value;
+
+            const json = {};
+            formData.forEach((value, key) => {
+                json[key] = value;
+            });
+
+            try {
+                const response = await fetch(`http://localhost:9080/productos/${id}`, {
+                    method: 'PUT',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(json)
+                });
+                const result = await response.text();
+                document.getElementById('output').textContent = result;
+            } catch (error) {
+                console.error('Error al actualizar producto:', error);
+            }
+        }
+
         // Obtener todas las columnas de la tabla Productos y generar un formulario dinámico
         async function getColumns() {
             try {
@@ -104,12 +153,22 @@
             }
         }
 
-        // Llamar a getColumns cuando se carga la página
-        window.onload = getColumns;
+        window.onload = function() {
+            getColumnsUpdate();
+            getColumns();
+        };
     </script>
 </head>
 <body>
     <h1>Gestión de Productos</h1>
+
+    <!-- Formulario para actualizar un producto dinámicamente -->
+    <h2>Actualizar Producto</h2>
+    id<input type="text" id="updateProductoId" placeholder="ID del Producto">
+    <form id="productFormUpdate">
+        <!-- Los campos del formulario se generarán dinámicamente -->
+    </form>
+    <button onclick="submitFormUpdate()">Actualizar Producto</button>
 
     <!-- Formulario para agregar un producto dinámicamente -->
     <h2>Agregar Producto</h2>

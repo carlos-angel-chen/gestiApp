@@ -65,6 +65,10 @@ void ProductosController::createProducto(const Rest::Request& request, Http::Res
         };
 
         productService.createProduct(producto);
+        response.headers()
+            .add<Http::Header::AccessControlAllowOrigin>("*")
+            .add<Http::Header::AccessControlAllowMethods>("GET, POST, PUT, DELETE, OPTIONS")
+            .add<Http::Header::AccessControlAllowHeaders>("Content-Type, Accept");
         response.send(Http::Code::Created, "Producto creado");
     } catch (const std::exception& e) {
         // Encabezados CORS en caso de error también
@@ -77,13 +81,32 @@ void ProductosController::createProducto(const Rest::Request& request, Http::Res
 }
 
 void ProductosController::updateProducto(const Rest::Request& request, Http::ResponseWriter response) {
-    auto id = request.param(":id").as<int>();
-    auto json = request.body();
-    // Asume que el JSON tiene campos "SKU" y "nombre"
-    // Parse JSON and update the database entry
+    try {
+        auto jsonBody = json::parse(request.body());
+        Productos producto = {
+            request.param(":id").as<int>(),
+            jsonBody["SKU"].get<std::string>(),
+            jsonBody["nombre"].get<std::string>(),
+            jsonBody.contains("stock_minimo") ? std::optional<std::string>(jsonBody["stock_minimo"].get<std::string>()) : std::nullopt,
+            jsonBody.contains("stock_actual") ? std::optional<std::string>(jsonBody["stock_actual"].get<std::string>()) : std::nullopt,
+            jsonBody["id_tipo"].get<std::string>()
+        };
 
-    // Insertar la lógica de actualización aquí
-    response.send(Http::Code::Ok, "Producto actualizado");
+        auto productoUpdated = productService.updateProductById(producto);
+        json jsonResponse = productoUpdated;
+        response.headers()
+            .add<Http::Header::AccessControlAllowOrigin>("*")
+            .add<Http::Header::AccessControlAllowMethods>("GET, POST, PUT, DELETE, OPTIONS")
+            .add<Http::Header::AccessControlAllowHeaders>("Content-Type, Accept");
+        response.send(Http::Code::Ok, jsonResponse.dump());
+    } catch (const std::exception& e) {
+        // Encabezados CORS en caso de error también
+        response.headers()
+            .add<Http::Header::AccessControlAllowOrigin>("*")
+            .add<Http::Header::AccessControlAllowMethods>("GET, POST, PUT, DELETE, OPTIONS")
+            .add<Http::Header::AccessControlAllowHeaders>("Content-Type, Accept");
+        response.send(Http::Code::Internal_Server_Error, "Error al actualizar producto");
+    }
 }
 
 void ProductosController::deleteProductoById(const Rest::Request& request, Http::ResponseWriter response) {

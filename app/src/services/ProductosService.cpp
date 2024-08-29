@@ -98,6 +98,40 @@ void ProductosService::createProduct(const Productos& productos) {
     }
 }
 
+Productos ProductosService::updateProductById(const Productos& productos){
+    try{
+        pqxx::work txn(*dbConn.getConnection());
+        std::string query = "UPDATE public.\"Productos\" SET ";
+        query += "\"SKU\" = " + txn.quote(productos.sku) + ", ";
+        query += "\"nombre\" = " + txn.quote(productos.nombre) + ", ";
+        query += "\"stock_minimo\" = " + txn.quote(productos.stock_minimo.value_or("")) + ", ";
+        query += "\"stock_actual\" = " + txn.quote(productos.stock_actual.value_or("")) + ", ";
+        query += "\"id_tipo\" = " + txn.quote(productos.id_tipo.value_or("")) + " ";
+        query += "WHERE \"id\" = " + txn.quote(productos.id) + " RETURNING *";
+        
+        txn.exec(query);
+
+        pqxx::result res = txn.exec("SELECT * FROM public.\"Productos\" WHERE id = " + txn.quote(productos.id));
+
+        auto row = res[0];
+        Productos p = {
+            row["id"].as<int>(),
+            row["\"SKU\""].as<std::string>(),
+            row["nombre"].as<std::string>(),
+            row["stock_minimo"].is_null() ? std::nullopt : std::optional<std::string>(row["stock_minimo"].as<std::string>()),
+            row["stock_actual"].is_null() ? std::nullopt : std::optional<std::string>(row["stock_actual"].as<std::string>()),
+            row["id_tipo"].is_null() ? std::nullopt : std::optional<std::string>(row["id_tipo"].as<std::string>())
+        };
+
+        txn.commit();
+        return p;
+    }
+    catch (const std::exception& e) {
+        std::cerr << "Error al actualizar producto: " << e.what() << std::endl;
+        throw;  // Lanza la excepción para que sea capturada por el controlador
+    }
+}
+
 void ProductosService::deleteProductById(int id) {
     pqxx::work txn(*dbConn.getConnection());
     txn.exec("DELETE FROM public.\"Productos\" WHERE id = " + txn.quote(id));

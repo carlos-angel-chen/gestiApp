@@ -13,6 +13,7 @@ public:
     std::vector<Productos> getAllProducts();
     Productos getProductById(int id);
     void createProduct(const Productos& productos);
+    Productos updateProductById(const Productos& productos);
     void deleteProductById(int id);
     void deleteProductBySKU(const std::string& sku);
     std::vector<std::string> getColumns();
