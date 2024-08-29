@@ -161,16 +161,22 @@ Productos ProductosService::updateProductById(const Productos& productos){
 }
 
 void ProductosService::deleteProductById(int id) {
-    pqxx::work txn(*dbConn.getConnection());
-    txn.exec("DELETE FROM public.\"Productos\" WHERE id = " + txn.quote(id));
-    txn.commit();
+    try{
+        pqxx::work txn(*dbConn.getConnection());
+        txn.exec("DELETE FROM public.\"Productos\" WHERE id = " + txn.quote(id));
+        txn.commit();
+    }
+    catch(const std::exception& e) {
+        std::cerr << "Error al eliminar producto: " << e.what() << std::endl;
+        throw;  // Lanza la excepción para que sea capturada por el controlador
+    }
 }
 
-void ProductosService::deleteProductBySKU(const std::string& sku) {
-    pqxx::work txn(*dbConn.getConnection());
-    txn.exec("DELETE FROM public.\"Productos\" WHERE \"SKU\" = " + txn.quote(sku));
-    txn.commit();
-}
+// void ProductosService::deleteProductBySKU(const std::string& sku) {
+//     pqxx::work txn(*dbConn.getConnection());
+//     txn.exec("DELETE FROM public.\"Productos\" WHERE \"SKU\" = " + txn.quote(sku));
+//     txn.commit();
+// }
 
 std::vector<std::string> ProductosService::getColumns() {
     try{

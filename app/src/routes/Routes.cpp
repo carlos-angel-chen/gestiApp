@@ -22,7 +22,7 @@ void setupRoutes(Pistache::Rest::Router& router, DatabaseConnection& dbConn) {
     Routes::Post(router, "/productos", Routes::bind(&ProductosController::createProduct, productosController));
     Routes::Put(router, "/productos/:id", Routes::bind(&ProductosController::updateProduct, productosController));
     Routes::Delete(router, "/productos/:id", Routes::bind(&ProductosController::deleteProductById, productosController));
-    Routes::Delete(router, "/productos/SKU/:sku", Routes::bind(&ProductosController::deleteProductBySKU, productosController));
+    // Routes::Delete(router, "/productos/SKU/:sku", Routes::bind(&ProductosController::deleteProductBySKU, productosController));
     Routes::Get(router, "/productos/columns", Routes::bind(&ProductosController::getColumns, productosController));
 
     // Asegúrate de no duplicar las rutas OPTIONS

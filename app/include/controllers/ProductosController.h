@@ -19,7 +19,7 @@ public:
     void updateProduct(const Rest::Request& request, Http::ResponseWriter response);
     void deleteProductById(const Rest::Request& request, Http::ResponseWriter response);
     void getColumns(const Rest::Request& request, Http::ResponseWriter response);
-    void deleteProductBySKU(const Rest::Request& request, Http::ResponseWriter response);
+    // void deleteProductBySKU(const Rest::Request& request, Http::ResponseWriter response);
 
 private:
     DatabaseConnection& dbConn;

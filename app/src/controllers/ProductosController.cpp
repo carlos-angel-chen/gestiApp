@@ -149,24 +149,24 @@ void ProductosController::deleteProductById(const Rest::Request& request, Http::
     }
 }
 
-void ProductosController::deleteProductBySKU(const Rest::Request& request, Http::ResponseWriter response) {
-    auto sku = request.param(":sku").as<std::string>();
-    try {
-        productService.deleteProductBySKU(sku);
-        response.headers()
-            .add<Http::Header::AccessControlAllowOrigin>("*")
-            .add<Http::Header::AccessControlAllowMethods>("GET, POST, PUT, DELETE, OPTIONS")
-            .add<Http::Header::AccessControlAllowHeaders>("Content-Type, Accept");
-        response.send(Http::Code::Ok, "Producto eliminado");
-    } catch (const std::exception& e) {
-        // Encabezados CORS en caso de error también
-        response.headers()
-            .add<Http::Header::AccessControlAllowOrigin>("*")
-            .add<Http::Header::AccessControlAllowMethods>("GET, POST, PUT, DELETE, OPTIONS")
-            .add<Http::Header::AccessControlAllowHeaders>("Content-Type, Accept");
-        response.send(Http::Code::Internal_Server_Error, "Error al eliminar producto");
-    }
-}
+// void ProductosController::deleteProductBySKU(const Rest::Request& request, Http::ResponseWriter response) {
+//     auto sku = request.param(":sku").as<std::string>();
+//     try {
+//         productService.deleteProductBySKU(sku);
+//         response.headers()
+//             .add<Http::Header::AccessControlAllowOrigin>("*")
+//             .add<Http::Header::AccessControlAllowMethods>("GET, POST, PUT, DELETE, OPTIONS")
+//             .add<Http::Header::AccessControlAllowHeaders>("Content-Type, Accept");
+//         response.send(Http::Code::Ok, "Producto eliminado");
+//     } catch (const std::exception& e) {
+//         // Encabezados CORS en caso de error también
+//         response.headers()
+//             .add<Http::Header::AccessControlAllowOrigin>("*")
+//             .add<Http::Header::AccessControlAllowMethods>("GET, POST, PUT, DELETE, OPTIONS")
+//             .add<Http::Header::AccessControlAllowHeaders>("Content-Type, Accept");
+//         response.send(Http::Code::Internal_Server_Error, "Error al eliminar producto");
+//     }
+// }
 
 void ProductosController::getColumns(const Rest::Request& request, Http::ResponseWriter response) {
     try {
