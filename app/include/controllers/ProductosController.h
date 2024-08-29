@@ -4,6 +4,7 @@
 #include <pistache/http.h>
 #include <pistache/router.h>
 #include "database/DatabaseConnection.h"
+#include "../services/ProductosService.h"
 
 using namespace Pistache;
 
@@ -21,6 +22,7 @@ public:
 
 private:
     DatabaseConnection& dbConn;
+    ProductosService productService;
 };
 
 #endif // PRODUCTOS_CONTROLLER_H

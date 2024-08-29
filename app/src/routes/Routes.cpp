@@ -7,7 +7,7 @@ void handleOptions(const Pistache::Rest::Request& request, Pistache::Http::Respo
         .add<Pistache::Http::Header::AccessControlAllowMethods>("GET, POST, PUT, DELETE, OPTIONS")
         .add<Pistache::Http::Header::AccessControlAllowHeaders>("Content-Type, Accept");
     
-    response.send(Pistache::Http::Code::Ok);
+    response.send(Pistache::Http::Code::No_Content);
 }
 
 void setupRoutes(Pistache::Rest::Router& router, DatabaseConnection& dbConn) {
@@ -27,5 +27,5 @@ void setupRoutes(Pistache::Rest::Router& router, DatabaseConnection& dbConn) {
     // Asegúrate de no duplicar las rutas OPTIONS
     Routes::Options(router, "/productos", Routes::bind(&handleOptions));
     Routes::Options(router, "/productos/:id", Routes::bind(&handleOptions));
-    Routes::Options(router, "/productos/SKU/:id", Routes::bind(&handleOptions));
+    Routes::Options(router, "/productos/SKU/:sku", Routes::bind(&handleOptions));
 }

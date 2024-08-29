@@ -1,52 +1,101 @@
 #include "../include/services/ProductosService.h"
+#include <iostream>
 
 ProductosService::ProductosService(DatabaseConnection& db) : dbConn(db) {}
 
-std::vector<Producto> ProductosService::getAllProducts() {
-    pqxx::work txn(*dbConn.getConnection());
-    pqxx::result res = txn.exec("SELECT * FROM public.\"Productos\"");
+std::vector<Productos> ProductosService::getAllProducts() {
+    try
+    {
+        pqxx::work txn(*dbConn.getConnection());
+        pqxx::result res = txn.exec("SELECT * FROM public.\"Productos\"");
 
-    std::vector<Producto> productos;
-    for (auto row : res) {
-        Producto p = {
+        std::vector<Productos> productos;
+        for (auto row : res) {
+            Productos p = {
+                row["id"].as<int>(),
+                row["\"SKU\""].as<std::string>(),
+                row["nombre"].as<std::string>(),
+                !row["stock_minimo"].is_null() ? row["stock_minimo"].as<std::string>() : "", // Manejar valores NULL
+                !row["stock_actual"].is_null() ? row["stock_actual"].as<std::string>() : "", // Manejar valores NULL
+                !row["id_tipo"].is_null() ? row["id_tipo"].as<std::string>() : ""            // Manejar valores NULL
+            };
+            productos.push_back(p);
+        }
+        return productos;
+    }
+    catch (const std::exception& e) {
+        std::cerr << "Error al obtener productos: " << e.what() << std::endl;
+        throw;  // Lanza la excepción para que sea capturada por el controlador
+    }    
+}
+
+Productos ProductosService::getProductById(int id) {
+    try{
+        pqxx::work txn(*dbConn.getConnection());
+        pqxx::result res = txn.exec("SELECT * FROM public.\"Productos\" WHERE id = " + txn.quote(id));
+
+        if (res.size() != 1) {
+            throw std::runtime_error("Producto no encontrado");
+        }
+
+        auto row = res[0];
+        Productos p = {
             row["id"].as<int>(),
-            row["SKU"].as<std::string>(),
+            row["\"SKU\""].as<std::string>(),
             row["nombre"].as<std::string>(),
-            row["stock_minimo"].as<std::string>(),
-            row["stock_actual"].as<std::string>(),
-            row["id_tipo"].as<std::string>()
+            row["stock_minimo"].is_null() ? std::nullopt : std::optional<std::string>(row["stock_minimo"].as<std::string>()),
+            row["stock_actual"].is_null() ? std::nullopt : std::optional<std::string>(row["stock_actual"].as<std::string>()),
+            row["id_tipo"].is_null() ? std::nullopt : std::optional<std::string>(row["id_tipo"].as<std::string>())
         };
-        productos.push_back(p);
+        return p;
     }
-    return productos;
-}
-
-Producto ProductosService::getProductById(int id) {
-    pqxx::work txn(*dbConn.getConnection());
-    pqxx::result res = txn.exec("SELECT * FROM public.\"Productos\" WHERE id = " + txn.quote(id));
-
-    if (res.size() != 1) {
-        throw std::runtime_error("Producto no encontrado");
+    catch (const std::exception& e) {
+        std::cerr << "Error al obtener producto: " << e.what() << std::endl;
+        throw;  // Lanza la excepción para que sea capturada por el controlador
     }
-
-    auto row = res[0];
-    Producto p = {
-        row["id"].as<int>(),
-        row["SKU"].as<std::string>(),
-        row["nombre"].as<std::string>(),
-        row["stock_minimo"].as<std::string>(),
-        row["stock_actual"].as<std::string>(),
-        row["id_tipo"].as<std::string>()
-    };
-    return p;
 }
+    
 
-void ProductosService::createProduct(const Producto& producto) {
-    pqxx::work txn(*dbConn.getConnection());
-    std::string query = "INSERT INTO public.\"Productos\" (\"SKU\", \"nombre\", \"stock_minimo\", \"stock_actual\", \"id_tipo\") VALUES (" +
-                        txn.quote(producto.sku) + ", " + txn.quote(producto.nombre) + ", " + txn.quote(producto.stock_minimo) + ", " + txn.quote(producto.stock_actual) + ", " + txn.quote(producto.id_tipo) + ")";
-    txn.exec(query);
-    txn.commit();
+void ProductosService::createProduct(const Productos& productos) {
+    try{
+        pqxx::work txn(*dbConn.getConnection());
+
+        // Inicia la consulta base con las columnas obligatorias
+        std::string query = "INSERT INTO public.\"Productos\" (\"SKU\", \"nombre\", \"id_tipo\"";
+
+        // Verifica si stock_minimo no es nulo, en ese caso agrega la columna a la consulta
+        if (productos.stock_minimo.has_value() && productos.stock_minimo!="") {
+            query += ", \"stock_minimo\"";
+        }
+
+        // Verifica si stock_actual no es nulo, en ese caso agrega la columna a la consulta
+        if (productos.stock_actual.has_value() && productos.stock_actual!="") {
+            query += ", \"stock_actual\"";
+        }
+
+        // Cierra la parte de las columnas
+        query += ") VALUES (" + txn.quote(productos.sku) + ", " + txn.quote(productos.nombre) + ", " + txn.quote(productos.id_tipo);
+
+        // Agrega los valores para stock_minimo y stock_actual si están presentes
+        if (productos.stock_minimo.has_value() && productos.stock_minimo!="") {
+            query += ", " + txn.quote(productos.stock_minimo.value());
+        }
+
+        if (productos.stock_actual.has_value() && productos.stock_actual!="") {
+            query += ", " + txn.quote(productos.stock_actual.value());
+        }
+
+        // Cierra la consulta SQL
+        query += ")";
+
+        // Ejecuta la consulta y realiza el commit
+        txn.exec(query);
+        txn.commit();
+    }
+    catch(const std::exception& e) {
+        std::cerr << "Error al crear producto: " << e.what() << std::endl;
+        throw;  // Lanza la excepción para que sea capturada por el controlador
+    }
 }
 
 void ProductosService::deleteProductById(int id) {
@@ -62,12 +111,18 @@ void ProductosService::deleteProductBySKU(const std::string& sku) {
 }
 
 std::vector<std::string> ProductosService::getColumns() {
-    pqxx::work txn(*dbConn.getConnection());
-    pqxx::result res = txn.exec("SELECT column_name FROM information_schema.columns WHERE table_name = 'Productos' AND table_schema = 'public'");
+    try{
+        pqxx::work txn(*dbConn.getConnection());
+        pqxx::result res = txn.exec("SELECT column_name FROM information_schema.columns WHERE table_name = 'Productos' AND table_schema = 'public'");
 
-    std::vector<std::string> columns;
-    for (auto row : res) {
-        columns.push_back(row["column_name"].as<std::string>());
+        std::vector<std::string> columns;
+        for (auto row : res) {
+            columns.push_back(row["column_name"].as<std::string>());
+        }
+        return columns;
     }
-    return columns;
+    catch(const std::exception& e) {
+        std::cerr << "Error al obtener columnas: " << e.what() << std::endl;
+        throw;  // Lanza la excepción para que sea capturada por el controlador
+    }
 }
