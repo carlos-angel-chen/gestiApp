@@ -55,8 +55,11 @@ void ProductosController::getProductById(const Rest::Request& request, Http::Res
 void ProductosController::getProductBySKU(const Rest::Request& request, Http::ResponseWriter response){
     auto sku = request.param(":sku").as<std::string>();
     try{
-        auto producto = productService.getProductBySKU(sku);
-        json jsonResponse = producto;
+        auto productos = productService.getProductBySKU(sku);
+        json jsonResponse = json::array();
+        for (const auto& producto : productos){
+            jsonResponse.push_back(producto);
+        }
         response.headers()
             .add<Http::Header::AccessControlAllowOrigin>("*")
             .add<Http::Header::AccessControlAllowMethods>("GET, POST, PUT, DELETE, OPTIONS")

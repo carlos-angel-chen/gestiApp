@@ -57,26 +57,25 @@ Productos ProductosService::getProductById(int id) {
     }
 }
 
-Productos ProductosService::getProductBySKU(const std::string& sku){
+std::vector<Productos> ProductosService::getProductBySKU(const std::string& sku){
     try{
         pqxx::work txn(*dbConn.getConnection());
         pqxx::result res = txn.exec("SELECT * FROM public.\"Productos\" WHERE \"SKU\" = " + txn.quote(sku));
-
-        if (res.size() != 1) {
-            throw std::runtime_error("Producto no encontrado");
+        
+        std::vector<Productos> productos;
+        for (auto row : res){
+            Productos p = {
+                row["id"].as<int>(),
+                row["\"SKU\""].as<std::string>(),
+                row["nombre"].as<std::string>(),
+                row["stock_minimo"].is_null() ? std::nullopt : std::optional<std::string>(row["stock_minimo"].as<std::string>()),
+                row["stock_actual"].is_null() ? std::nullopt : std::optional<std::string>(row["stock_actual"].as<std::string>()),
+                row["id_tipo"].is_null() ? std::nullopt : std::optional<std::string>(row["id_tipo"].as<std::string>())
+            };
+            productos.push_back(p);
         }
-
-        auto row = res[0];
-        Productos p = {
-            row["id"].as<int>(),
-            row["\"SKU\""].as<std::string>(),
-            row["nombre"].as<std::string>(),
-            row["stock_minimo"].is_null() ? std::nullopt : std::optional<std::string>(row["stock_minimo"].as<std::string>()),
-            row["stock_actual"].is_null() ? std::nullopt : std::optional<std::string>(row["stock_actual"].as<std::string>()),
-            row["id_tipo"].is_null() ? std::nullopt : std::optional<std::string>(row["id_tipo"].as<std::string>())
-        };
         txn.commit();
-        return p;
+        return productos;
     }
     catch(const std::exception& e){
         std::cerr << "Error al obtener producto: " << e.what() << std::endl;
