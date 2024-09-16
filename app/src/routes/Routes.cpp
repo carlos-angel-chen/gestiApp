@@ -1,5 +1,6 @@
 #include "Routes.h"
 #include "../include/controllers/ProductosController.h"
+#include "../include/controllers/ClientesController.h"
 
 void handleOptions(const Pistache::Rest::Request& request, Pistache::Http::ResponseWriter response) {
     response.headers()
@@ -12,10 +13,11 @@ void handleOptions(const Pistache::Rest::Request& request, Pistache::Http::Respo
 
 void setupRoutes(Pistache::Rest::Router& router, DatabaseConnection& dbConn) {
     auto productosController = std::make_shared<ProductosController>(dbConn);
+    auto clientesController = std::make_shared<ClientesController>(dbConn);
 
     using namespace Pistache::Rest;
 
-    // Revisa que no estés registrando las rutas más de una vez
+    // PRODUCTOS
     Routes::Get(router, "/productos", Routes::bind(&ProductosController::getAllProducts, productosController));
     Routes::Get(router, "/productos/:id", Routes::bind(&ProductosController::getProductById, productosController));
     Routes::Get(router, "/productos/:sku", Routes::bind(&ProductosController::getProductBySKU, productosController));
@@ -29,4 +31,8 @@ void setupRoutes(Pistache::Rest::Router& router, DatabaseConnection& dbConn) {
     Routes::Options(router, "/productos", Routes::bind(&handleOptions));
     Routes::Options(router, "/productos/:id", Routes::bind(&handleOptions));
     Routes::Options(router, "/productos/SKU/:sku", Routes::bind(&handleOptions));
+
+    // CLIENTES
+    Routes::Get(router, "/clientes", Routes::bind(&ClientesController::getAllClients, clientesController));
+    Routes::Get(router, "/clientes/nombre/:nombre", Routes::bind(&ClientesController::getClientsByNombre, clientesController));
 }

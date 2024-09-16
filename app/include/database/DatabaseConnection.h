@@ -3,11 +3,13 @@
 
 #include <pqxx/pqxx>  // Incluir la biblioteca pqxx
 #include <string>
+#include <memory>
 
 class DatabaseConnection {
 private:
     std::string connectionString;
-    pqxx::connection* conn;
+    // pqxx::connection* conn;
+    std::unique_ptr<pqxx::connection> conn;
 
 public:
     DatabaseConnection(const std::string& connStr);

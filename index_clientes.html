@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Gestión de Clientes</title>
+    <script>
+        async function getAllClients() {
+            try {
+                const response = await fetch('http://localhost:9080/clientes');
+                const data = await response.json();
+                document.getElementById('output').textContent = JSON.stringify(data, null, 2);
+            } catch (error) {
+                console.error('Error al obtener clientes:', error);
+            }
+        }
+
+        async function getClientesByNombre() {
+            const nombre = document.getElementById('nombre').value;
+            try {
+                const response = await fetch(`http://localhost:9080/clientes/nombre/${nombre}`);
+                const data = await response.json();
+                document.getElementById('output').textContent = JSON.stringify(data, null, 2);
+            } catch (error) {
+                console.error('Error al obtener clientes por nombre:', error);
+            }
+        }
+    </script>
+</head>
+<body>
+    <h1>Gestión de Clientes</h1>
+
+    <!-- Obtener todos los clientes -->
+    <button onclick="getAllClients()">Obtener todos los clientes</button>
+    <br><br>
+
+    <!-- Obtener clientes por nombre -->
+    <input type="text" id="nombre" placeholder="Nombre del cliente">
+    <button onclick="getClientesByNombre()">Obtener clientes por nombre</button>
+    <br><br>
+
+    <!-- Mostrar resultado de las operaciones -->
+    <pre id="output"></pre>
+</body>
+</html>

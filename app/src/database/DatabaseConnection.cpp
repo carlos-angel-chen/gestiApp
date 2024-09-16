@@ -9,7 +9,8 @@ DatabaseConnection::~DatabaseConnection() {
 
 bool DatabaseConnection::connect() {
     try {
-        conn = new pqxx::connection(connectionString);
+        // conn = new pqxx::connection(connectionString);
+        conn = std::make_unique<pqxx::connection>(connectionString);
         if (conn->is_open()) {
             std::cout << "Connected to database: " << conn->dbname() << std::endl;
             return true;
@@ -24,10 +25,14 @@ bool DatabaseConnection::connect() {
 }
 
 void DatabaseConnection::disconnect() {
+    // if (conn) {
+    //     conn->disconnect();
+    //     delete conn;
+    //     conn = nullptr;
+    //     std::cout << "Disconnected from database." << std::endl;
+    // }
     if (conn) {
-        conn->disconnect();
-        delete conn;
-        conn = nullptr;
+        conn.reset();  // Esto libera la conexión automáticamente
         std::cout << "Disconnected from database." << std::endl;
     }
 }
@@ -37,5 +42,5 @@ bool DatabaseConnection::isConnected() const {
 }
 
 pqxx::connection* DatabaseConnection::getConnection() const {
-    return conn;
+    return conn.get();
 }
