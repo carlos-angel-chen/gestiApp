@@ -4,20 +4,6 @@
 #include <string>
 #include <nlohmann/json.hpp>  // Asegúrate de incluir la biblioteca nlohmann::json
 #include <optional>
-/*
-    id
-    razon_social
-    CUIT
-    tributacion
-    telefono
-    email
-    nombre
-    direccion_fiscal
-    direccion_entrega
-    localidad
-    cp
-    whatsapp
-*/
 
 class Clientes {
 public: 
@@ -25,7 +11,7 @@ public:
     std::string razonSocial;
     std::string cuit;
     std::string tributacion;
-    int telefono;
+    std::string telefono;
     std::string email;
     std::string nombre;
     std::string direccionFiscal;
@@ -41,7 +27,7 @@ public:
         const std::string& razonSocial,
         const std::string& cuit,
         const std::string& tributacion,
-        int telefono,
+        const std::string& telefono,
         const std::string& email,
         const std::string& nombre,
         const std::string& direccionFiscal,

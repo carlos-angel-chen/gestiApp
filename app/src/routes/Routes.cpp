@@ -35,4 +35,13 @@ void setupRoutes(Pistache::Rest::Router& router, DatabaseConnection& dbConn) {
     // CLIENTES
     Routes::Get(router, "/clientes", Routes::bind(&ClientesController::getAllClients, clientesController));
     Routes::Get(router, "/clientes/nombre/:nombre", Routes::bind(&ClientesController::getClientsByNombre, clientesController));
+    Routes::Get(router, "/clientes/razon_social/:razonSocial", Routes::bind(&ClientesController::getClientsByRazonSocial, clientesController));
+    Routes::Get(router, "/clientes/cuit/:cuit", Routes::bind(&ClientesController::getClientByCuit, clientesController));
+    Routes::Post(router, "/clientes", Routes::bind(&ClientesController::createClient, clientesController));
+    Routes::Put(router, "/clientes/:id", Routes::bind(&ClientesController::updateClientById, clientesController));
+    Routes::Delete(router, "/clientes/:id", Routes::bind(&ClientesController::deleteClientById, clientesController));
+    Routes::Get(router, "/clientes/columns", Routes::bind(&ClientesController::getColumns, clientesController));
+
+    Routes::Options(router, "/clientes", Routes::bind(&handleOptions));
+    Routes::Options(router, "/clientes/:id", Routes::bind(&handleOptions));
 }

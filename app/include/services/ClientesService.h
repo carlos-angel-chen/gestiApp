@@ -18,6 +18,7 @@ public:
     Clientes updateClientById(const Clientes& clientes);
     void deleteClientById(int id);
     std::vector<std::string> getColumns();
+    
 private:
     DatabaseConnection& dbConn;
 };

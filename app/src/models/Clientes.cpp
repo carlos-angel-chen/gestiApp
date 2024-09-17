@@ -5,7 +5,7 @@ Clientes::Clientes(
     const std::string& razonSocial,
     const std::string& cuit,
     const std::string& tributacion,
-    int telefono,
+    const std::string& telefono,
     const std::string& email,
     const std::string& nombre,
     const std::string& direccionFiscal,

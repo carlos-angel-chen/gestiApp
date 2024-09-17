@@ -154,7 +154,6 @@
         // Eliminar un producto por ID
         async function deleteProductoBySKU() {
             const sku = document.getElementById('productoIdDeleteSKU').value;
-            console.log(sku);
             try {
                 const response = await fetch(`http://localhost:9080/productos/SKU/${sku}`, {
                     method: 'DELETE'
