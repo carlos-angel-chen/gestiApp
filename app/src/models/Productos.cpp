@@ -48,7 +48,25 @@ void from_json(const nlohmann::json& j, Productos& p) {
     j.at("id").get_to(p.id);
     j.at("\"SKU\"").get_to(p.sku);
     j.at("nombre").get_to(p.nombre);
-    j.at("stock_minimo").get_to(p.stock_minimo);
-    j.at("stock_actual").get_to(p.stock_actual);
-    j.at("id_tipo").get_to(p.id_tipo);
+    // j.at("stock_minimo").get_to(p.stock_minimo);
+    // j.at("stock_actual").get_to(p.stock_actual);
+    // j.at("id_tipo").get_to(p.id_tipo);
+
+    if (j.contains("stock_minimo") && !j.at("stock_minimo").is_null()) {
+        p.stock_minimo = j.at("stock_minimo").get<std::string>();
+    } else {
+        p.stock_minimo = std::nullopt;
+    }
+
+    if (j.contains("stock_actual") && !j.at("stock_actual").is_null()) {
+        p.stock_actual = j.at("stock_actual").get<std::string>();
+    } else {
+        p.stock_actual = std::nullopt;
+    }
+
+    if (j.contains("id_tipo") && !j.at("id_tipo").is_null()) {
+        p.id_tipo = j.at("id_tipo").get<std::string>();
+    } else {
+        p.id_tipo = std::nullopt;
+    }
 }

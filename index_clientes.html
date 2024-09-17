@@ -1,0 +1,203 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Gestión de Clientes</title>
+    <script>
+        async function getAllClients() {
+            try {
+                const response = await fetch('http://localhost:9080/clientes');
+                const data = await response.json();
+                document.getElementById('output').textContent = JSON.stringify(data, null, 2);
+            } catch (error) {
+                console.error('Error al obtener clientes:', error);
+            }
+        }
+
+        async function getClientesByNombre() {
+            const nombre = document.getElementById('nombre').value;
+            try {
+                const response = await fetch(`http://localhost:9080/clientes/nombre/${nombre}`);
+                const data = await response.json();
+                document.getElementById('output').textContent = JSON.stringify(data, null, 2);
+            } catch (error) {
+                console.error('Error al obtener clientes por nombre:', error);
+            }
+        }
+
+        async function getClientesByRazonSocial(){
+            const razonSocial = document.getElementById('razonSocial').value;
+            try {
+                const response = await fetch(`http://localhost:9080/clientes/razon_social/${razonSocial}`);
+                const data = await response.json();
+                document.getElementById('output').textContent = JSON.stringify(data, null, 2);
+            } catch (error) {
+                console.error('Error al obtener clientes por razón social:', error);
+            }
+        }
+
+        async function getClientesByCuit(){
+            const cuit = document.getElementById('cuit').value;
+            try{
+                const response = await fetch(`http://localhost:9080/clientes/cuit/${cuit}`);
+                const data = await response.json();
+                document.getElementById('output').textContent = JSON.stringify(data, null, 2);
+            } catch (error) {
+                console.error('Error al obtener clientes por CUIT:', error);
+            }
+        }
+
+        async function postCliente(){
+            const form = document.getElementById('nuevoClienteForm');
+            const formData = new FormData(form);
+
+            const json = {};
+            formData.forEach((value, key) => {
+                json[key] = value;
+            });
+
+            try{
+                const response = await fetch('http://localhost:9080/clientes', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(json)
+                });
+                const result = await response.text();
+                document.getElementById('output').textContent = result;
+            } catch (error) {
+                console.error('Error al agregar cliente:', error);
+            }
+        }
+
+        async function updateCliente(){
+            const form = document.getElementById('updateClienteForm');
+            const formData = new FormData(form);
+
+            const json = {};
+            formData.forEach((value, key) => {
+                json[key] = value;
+            });
+            const id = json['id'];
+            try{
+                const response = await fetch(`http://localhost:9080/clientes/${id}`, {
+                    method: 'PUT',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(json)
+                });
+                const result = await response.text();
+                document.getElementById('output').textContent = result;
+            } catch (error) {
+                console.error('Error al actualizar cliente:', error);
+            }
+        }
+
+        async function deleteClienteById(){
+            const id = document.getElementById('id').value;
+            try{
+                const response = await fetch(`http://localhost:9080/clientes/${id}`, {
+                    method: 'DELETE'
+                });
+                const result = await response.text();
+                document.getElementById('output').textContent = result;
+            } catch (error) {
+                console.error('Error al eliminar cliente:', error);
+            }
+        }
+
+        async function getPostColumns() {
+            try{
+                const response = await fetch('http://localhost:9080/clientes/columns');
+                const column = await response.json();
+
+                const form = document.getElementById('nuevoClienteForm');
+                form.innerHTML = "";
+                column.forEach(column => {
+                    const label = document.createElement('label');
+                    if (column !== 'id'){
+                        label.textContent = column;
+                        const input = document.createElement('input');
+                        input.type = 'text';
+                        input.name = column;
+                        form.appendChild(label);
+                        form.appendChild(input);
+                        form.appendChild(document.createElement('br'));
+                    }
+                })
+            } catch (error) {
+                console.error('Error al obtener columnas:', error);
+            }
+        }
+
+        async function getUpdateColumns() {
+            try{
+                const response = await fetch('http://localhost:9080/clientes/columns');
+                const column = await response.json();
+
+                const form = document.getElementById('updateClienteForm');
+                form.innerHTML = "";
+                column.forEach(column => {
+                    const label = document.createElement('label');
+                    label.textContent = column;
+                    const input = document.createElement('input');
+                    input.type = 'text';
+                    input.name = column;
+                    form.appendChild(label);
+                    form.appendChild(input);
+                    form.appendChild(document.createElement('br'));
+                })
+            } catch (error) {
+                console.error('Error al obtener columnas:', error);
+            }
+        }
+
+        window.onload = function () {
+            getPostColumns();
+            getUpdateColumns();
+        }
+    </script>
+</head>
+<body>
+    <h1>Gestión de Clientes</h1>
+
+    <!-- Obtener todos los clientes -->
+    <button onclick="getAllClients()">Obtener todos los clientes</button>
+    <br><br>
+
+    <!-- Obtener clientes por nombre -->
+    <input type="text" id="nombre" placeholder="Nombre del cliente">
+    <button onclick="getClientesByNombre()">Obtener clientes por nombre</button>
+    <br><br>
+
+    <!-- Obtener clientes por razon social -->
+    <input type="text" id="razonSocial" placeholder="Razon Social">
+    <button onclick="getClientesByRazonSocial()">Obtener clientes por razon social</button>
+    <br><br>
+
+    <!-- Obtener clientes por cuit -->
+    <input type="text" id="cuit" placeholder="CUIT">
+    <button onclick="getClientesByCuit()">Obtener clientes por CUIT</button>
+    <br><br>
+
+    <!-- Eliminar cliente por ID -->
+    <input type="text" id="id" placeholder="ID del cliente">
+    <button onclick="deleteClienteById()">Eliminar cliente por ID</button>
+    <br><br>
+
+
+    <!-- Agregar un nuevo cliente -->
+    <h2>Agregar Cliente</h2>
+    <form id="nuevoClienteForm">
+
+    </form>
+    <button onclick="postCliente()">Agregar Cliente</button>
+
+    <!-- Actualizar un cliente -->
+    <h2>Actualizar Cliente</h2>
+    <form id="updateClienteForm"></form>
+    <button onclick="updateCliente()">Actualizar Cliente</button>
+
+    <!-- Mostrar resultado de las operaciones -->
+    <pre id="output"></pre>
+</body>
+</html>

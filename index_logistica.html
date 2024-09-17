@@ -1,0 +1,206 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Gestión de Logistica</title>
+    <script>
+        async function getAllLogisticas(){
+            try{
+                const response = await fetch('http://localhost:9080/logistica');
+                const data = await response.json();
+                document.getElementById('output').textContent = JSON.stringify(data, null, 2);
+            } catch (error){
+                console.error('Error al obtener logistica:', error);
+            }
+        }
+
+        async function getLogisticaByNombre(){
+            const nombre = document.getElementById('nombre').value;
+            try{
+                const response = await fetch(`http://localhost:9080/logistica/nombre/${nombre}`);
+                const data = await response.json();
+                document.getElementById('output').textContent = JSON.stringify(data, null, 2);
+            } catch (error){
+                console.error('Error al obtener logistica por nombre:', error);
+            }
+        }
+
+        async function getLogisticaByRazonSocial(){
+            const razonSocial = document.getElementById('razonSocial').value;
+            try{
+                const response = await fetch(`http://localhost:9080/logistica/razon_social/${razonSocial}`);
+                const data = await response.json();
+                document.getElementById('output').textContent = JSON.stringify(data, null, 2);
+            } catch (error){
+                console.error('Error al obtener logistica por razon social:', error);
+            }
+        }
+
+        async function getLogisticaByCuit(){
+            const cuit = document.getElementById('cuit').value;
+            try{
+                const response = await fetch(`http://localhost:9080/logistica/cuit/${cuit}`);
+                const data = await response.json();
+                document.getElementById('output').textContent = JSON.stringify(data, null, 2);
+            } catch (error){
+                console.error('Error al obtener logistica por CUIT:', error);
+            }
+        }
+
+        async function postLogistica(){
+            const form = document.getElementById('nuevoLogisticaForm');
+            const formData = new FormData(form);
+
+            const json = {};
+            formData.forEach((value, key) => {
+                json[key] = value;
+            });
+
+            try{
+                const response = await fetch('http://localhost:9080/logistica', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify(json)
+                });
+                const data = await response.json();
+                document.getElementById('output').textContent = JSON.stringify(data, null, 2);
+            } catch (error){
+                console.error('Error al agregar logistica:', error);
+            }
+        }
+
+        async function updateLogistica(){
+            const form = document.getElementById('updateLogisticaForm');
+            const formData = new FormData(form);
+
+            const json = {};
+            formData.forEach((value, key) => {
+                json[key] = value;
+            });
+            const id = json['id'];
+            try{
+                const response = await fetch(`http://localhost:9080/logistica/${id}`, {
+                    method: 'PUT',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify(json)
+                });
+                const data = await response.json();
+                document.getElementById('output').textContent = JSON.stringify(data, null, 2);
+            } catch (error){
+                console.error('Error al actualizar logistica:', error);
+            }
+        }
+
+        async function deleteLogisticaById(){
+            const id = document.getElementById('id').value;
+            try{
+                const response = await fetch(`http://localhost:9080/logistica/${id}`, {
+                    method: 'DELETE'
+                });
+                const data = await response.json();
+                document.getElementById('output').textContent = JSON.stringify(data, null, 2);
+            } catch (error){
+                console.error('Error al eliminar logistica por ID:', error);
+            }
+        }
+
+        async function getPostColumns() {
+            try{
+                const response = await fetch('http://localhost:9080/logistica/columns');
+                const column = await response.json();
+
+                const form = document.getElementById('nuevoLogisticaForm');
+                form.innerHTML = "";
+                column.forEach(column => {
+                    const label = document.createElement('label');
+                    if (column !== 'id'){
+                        label.textContent = column;
+                        const input = document.createElement('input');
+                        input.type = 'text';
+                        input.name = column;
+                        form.appendChild(label);
+                        form.appendChild(input);
+                        form.appendChild(document.createElement('br'));
+                    }
+                })
+            } catch (error) {
+                console.error('Error al obtener columnas:', error);
+            }
+        }
+
+        async function getUpdateColumns() {
+            try{
+                const response = await fetch('http://localhost:9080/logistica/columns');
+                const column = await response.json();
+
+                const form = document.getElementById('updateLogisticaForm');
+                form.innerHTML = "";
+                column.forEach(column => {
+                    const label = document.createElement('label');
+                    label.textContent = column;
+                    const input = document.createElement('input');
+                    input.type = 'text';
+                    input.name = column;
+                    form.appendChild(label);
+                    form.appendChild(input);
+                    form.appendChild(document.createElement('br'));
+                })
+            } catch (error) {
+                console.error('Error al obtener columnas:', error);
+            }
+        }
+
+        window.onload = function (){
+            getPostColumns();
+            getUpdateColumns();
+        }
+    </script>
+</head>
+
+<body>
+    <h1>Gestión de Logistica</h1>
+
+    <!-- Obtener todos los logistica -->
+    <button onclick="getAllLogisticas()">Obtener todos los logistica</button>
+    <br><br>
+
+    <!-- Obtener logistica por nombre -->
+    <input type="text" id="nombre" placeholder="Nombre del cliente">
+    <button onclick="getLogisticaByNombre()">Obtener logistica por nombre</button>
+    <br><br>
+
+    <!-- Obtener logistica por razon social -->
+    <input type="text" id="razonSocial" placeholder="Razon Social">
+    <button onclick="getLogisticaByRazonSocial()">Obtener logistica por razon social</button>
+    <br><br>
+
+    <!-- Obtener logistica por cuit -->
+    <input type="text" id="cuit" placeholder="CUIT">
+    <button onclick="getLogisticaByCuit()">Obtener logistica por CUIT</button>
+    <br><br>
+
+    <!-- Eliminar logistica por ID -->
+    <input type="text" id="id" placeholder="ID del cliente">
+    <button onclick="deleteLogisticaById()">Eliminar logistica por ID</button>
+    <br><br>
+
+
+    <!-- Agregar un nuevo logistica -->
+    <h2>Agregar Logistica</h2>
+    <form id="nuevoLogisticaForm"></form>
+    <button onclick="postLogistica()">Agregar Logistica</button>
+
+    <!-- Actualizar un logistica -->
+    <h2>Actualizar Logistica</h2>
+    <form id="updateLogisticaForm"></form>
+    <button onclick="updateLogistica()">Actualizar Logistica</button>
+
+    <!-- Mostrar resultado de las operaciones -->
+    <pre id="output"></pre>
+</body>
+</html>
