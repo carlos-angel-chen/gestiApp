@@ -2,6 +2,7 @@
 #include "../include/controllers/ProductosController.h"
 #include "../include/controllers/ClientesController.h"
 #include "../include/controllers/LogisticaController.h"
+#include "../include/controllers/MetodoPagosController.h"
 
 void handleOptions(const Pistache::Rest::Request& request, Pistache::Http::ResponseWriter response) {
     response.headers()
@@ -16,6 +17,7 @@ void setupRoutes(Pistache::Rest::Router& router, DatabaseConnection& dbConn) {
     auto productosController = std::make_shared<ProductosController>(dbConn);
     auto clientesController = std::make_shared<ClientesController>(dbConn);
     auto logisticaController = std::make_shared<LogisticaController>(dbConn);
+    auto metodoPagosController = std::make_shared<MetodoPagosController>(dbConn);
 
     using namespace Pistache::Rest;
 
@@ -59,4 +61,14 @@ void setupRoutes(Pistache::Rest::Router& router, DatabaseConnection& dbConn) {
 
     Routes::Options(router, "/logistica", Routes::bind(&handleOptions));
     Routes::Options(router, "/logistica/:id", Routes::bind(&handleOptions));
+
+    // METODO PAGOS
+    Routes::Get(router, "/metodo_pagos", Routes::bind(&MetodoPagosController::getAllMetodoPagos, metodoPagosController));
+    Routes::Post(router, "/metodo_pagos", Routes::bind(&MetodoPagosController::createMetodoPago, metodoPagosController));
+    Routes::Put(router, "/metodo_pagos/:id", Routes::bind(&MetodoPagosController::updateMetodoPagoById, metodoPagosController));
+    Routes::Delete(router, "/metodo_pagos/:id", Routes::bind(&MetodoPagosController::deleteMetodoPagoById, metodoPagosController));
+    Routes::Get(router, "/metodo_pagos/columns", Routes::bind(&MetodoPagosController::getColumns, metodoPagosController));
+    
+    Routes::Options(router, "/metodo_pagos", Routes::bind(&handleOptions));
+    Routes::Options(router, "/metodo_pagos/:id", Routes::bind(&handleOptions));
 }

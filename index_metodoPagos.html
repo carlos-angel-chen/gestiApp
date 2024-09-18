@@ -1,0 +1,157 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Gestión de Metodo Pagos</title>
+    <script>
+        async function getAllMetodoPagos(){
+            try{
+                const response = await fetch('http://localhost:9080/metodo_pagos');
+                const data = await response.json();
+                document.getElementById('output').textContent = JSON.stringify(data, null, 2);
+            } catch (error){
+                console.error('Error al obtener metodo pagos:', error);
+            }
+        }
+
+        async function postMetodoPagos(){
+            const form = document.getElementById('nuevoMetodoPagosForm');
+            const formData = new FormData(form);
+
+            const json = {};
+            formData.forEach((value, key) => {
+                json[key] = value;
+            });
+
+            try{
+                const response = await fetch('http://localhost:9080/metodo_pagos', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify(json)
+                });
+                const result = await response.text();
+                document.getElementById('output').textContent = result
+            } catch (error){
+                console.error('Error al agregar metodo pagos:', error);
+            }
+        }
+
+        async function updateMetodoPagos(){
+            const form = document.getElementById('updateMetodoPagosForm');
+            const formData = new FormData(form);
+
+            const json = {};
+            formData.forEach((value, key) => {
+                json[key] = value;
+            });
+            const id = json.id;
+            console.log(json);
+            try{
+                const response = await fetch(`http://localhost:9080/metodo_pagos/${id}`, {
+                    method: 'PUT',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify(json)
+                });
+                const data = await response.text();
+                document.getElementById('output').textContent = data;
+            } catch (error){
+                console.error('Error al actualizar metodo pagos:', error);
+            }
+        }
+
+        async function deleteMetodoPagosById(){
+            const id = document.getElementById('id').value;
+            try{
+                const response = await fetch(`http://localhost:9080/metodo_pagos/${id}`, {
+                    method: 'DELETE'
+                });
+                const data = await response.text();
+                document.getElementById('output').textContent = data;
+            } catch (error){
+                console.error('Error al eliminar metodo pagos:', error);
+            }
+        }
+
+        async function getPostColumns(){
+            try{
+                const response = await fetch('http://localhost:9080/metodo_pagos/columns');
+                const column = await response.json();
+
+                const form = document.getElementById('nuevoMetodoPagosForm');
+                form.innerHTML = '';
+                column.forEach(column => {
+                    const label = document.createElement('label');
+                    if (column !== 'id'){
+                        label.textContent = column;
+                        const input = document.createElement('input');
+                        input.type = 'text';
+                        input.name = column;
+                        form.appendChild(label);
+                        form.appendChild(input);
+                        form.appendChild(document.createElement('br'));
+                    }
+                })
+            } catch (error){
+                console.error('Error al obtener columnas de metodo pagos:', error);
+            }
+        }
+
+        async function getUpdateColumns(){
+            try{
+                const response = await fetch('http://localhost:9080/metodo_pagos/columns');
+                const column = await response.json();
+
+                const form = document.getElementById('updateMetodoPagosForm');
+                form.innerHTML = '';
+                column.forEach(column => {
+                    const label = document.createElement('label');
+                    label.textContent = column;
+                    const input = document.createElement('input');
+                    input.type = 'text';
+                    input.name = column;
+                    form.appendChild(label);
+                    form.appendChild(input);
+                    form.appendChild(document.createElement('br'));
+                })
+            } catch (error){
+                console.error('Error al obtener columnas de metodo pagos:', error);
+            }
+        }
+
+        window.onload = function (){
+            getPostColumns();
+            getUpdateColumns();
+        }
+    </script>
+</head>
+<body>
+    <h1>Gestión de MetodoPagos</h1>
+
+    <!-- Obtener todos los metodo pagos -->
+    <button onclick="getAllMetodoPagos()">Obtener todos los metodo pagos</button>
+    <br><br>
+
+    <!-- Eliminar metodo pagos por ID -->
+    <input type="text" id="id" placeholder="ID del cliente">
+    <button onclick="deleteMetodoPagosById()">Eliminar metodo pagos por ID</button>
+    <br><br>
+
+    <!-- Agregar un nuevo metodo pagos -->
+    <h2>Agregar MetodoPagos</h2>
+    <form id="nuevoMetodoPagosForm"></form>
+    <button onclick="postMetodoPagos()">Agregar MetodoPagos</button>
+
+    <!-- Actualizar un metodo pagos -->
+    <h2>Actualizar MetodoPagos</h2>
+    <form id="updateMetodoPagosForm"></form>
+    <button onclick="updateMetodoPagos()">Actualizar MetodoPagos</button>
+
+    <!-- Mostrar resultado de las operaciones -->
+    <pre id="output"></pre>
+</body>
+</html>
