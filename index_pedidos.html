@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Index Pedidos</title>
+    <script>
+        async function getAllPedidos(){
+            try{
+                const response = await fetch('http://localhost:9080/pedidos');
+                const data = await response.json();
+                document.getElementById('output').textContent = JSON.stringify(data, null, 2);
+            } catch(error){
+                console.error('Error:', error);
+            }
+        }
+
+        async function getPedidoById(){
+            const id = document.getElementById('id').value;
+            try{
+                const response = await fetch(`http://localhost:9080/pedidos/id/${id}`);
+                const data = await response.json();
+                document.getElementById('output').textContent = JSON.stringify(data, null, 2);
+            } catch(error){
+                console.error('Error:', error);
+            }
+        }
+
+
+    </script>
+</head>
+
+<body>
+    <!-- Obtener todos los pedidos -->
+    <button onclick="getAllPedidos()">Obtener Todos los Pedidos</button>
+    <br><br>
+
+    <!-- Obtener pedido por ID -->
+    <input type="text" id="id" placeholder="ID del Pedido">
+    <button onclick="getPedidoById()">Obtener Pedido por ID</button>
+    <br><br>
+
+    <!-- Mostrar resultado de las operaciones -->
+    <pre id="output"></pre>
+</body>
+</html>

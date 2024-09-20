@@ -11,9 +11,9 @@ public:
     explicit PedidosService(DatabaseConnection& db);
 
     std::vector<Pedidos> getAllPedidos();
-    Pedidos getPedidoById(int id);
-    Pedidos updatePedidoById(const Pedidos& pedidos);
-    void deletePedidoById(int id);
+    std::vector<Pedidos> getPedidoById(int id);
+    //Pedidos updatePedidoById(const Pedidos& pedidos);
+    //void deletePedidoById(int id);
     std::vector<std::string> getColumns();
 private:
     DatabaseConnection& dbConn;
