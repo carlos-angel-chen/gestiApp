@@ -38,7 +38,16 @@
 
             const json = {};
             formData.forEach((value, key) => {
-                json[key] = value;
+                // Comprobamos si las claves son campos numéricos para castear a float
+                if (key === 'costo' || key === 'precio_con_iva' || key === 'precio_mayorista' || key === 'precio_minorista' || key === 'precio_sin_iva' || key === 'precio_venta' || key === 'precio_venta_minimo') {
+                    json[key] = parseFloat(value); // Convertir el valor a float
+                } 
+                else if (key === 'stock_actual' || key === 'stock_minimo'){
+                    json[key] = parseInt(value); // Convertir el valor a entero
+                }
+                else {
+                    json[key] = value; // Mantener el valor como está para los campos no numéricos
+                }
             });
 
             try {
@@ -86,9 +95,18 @@
 
             const json = {};
             formData.forEach((value, key) => {
-                json[key] = value;
+                // Comprobamos si las claves son campos numéricos para castear a float
+                if (key === 'costo' || key === 'precio_con_iva' || key === 'precio_mayorista' || key === 'precio_minorista' || key === 'precio_sin_iva' || key === 'precio_venta' || key === 'precio_venta_minimo') {
+                    json[key] = parseFloat(value); // Convertir el valor a float
+                } 
+                else if (key === 'stock_actual' || key === 'stock_minimo'){
+                    json[key] = parseInt(value); // Convertir el valor a entero
+                }
+                else {
+                    json[key] = value; // Mantener el valor como está para los campos no numéricos
+                }
             });
-
+            console.log(json);
             try {
                 const response = await fetch('http://localhost:9080/productos', {
                     method: 'POST',
@@ -117,7 +135,7 @@
         async function getProductoById() {
             const id = document.getElementById('productoId').value;
             try {
-                const response = await fetch(`http://localhost:9080/productos/${id}`);
+                const response = await fetch(`http://localhost:9080/productos/id/${id}`);
                 const data = await response.json();
                 document.getElementById('output').textContent = JSON.stringify(data, null, 2);
             } catch (error) {
@@ -129,7 +147,7 @@
         async function getProductoBySKU() {
             const sku = document.getElementById('productoSKU').value;
             try {
-                const response = await fetch(`http://localhost:9080/productos/${sku}`);
+                const response = await fetch(`http://localhost:9080/productos/sku/${sku}`);
                 const data = await response.json();
                 document.getElementById('output').textContent = JSON.stringify(data, null, 2);
             } catch (error) {
@@ -140,7 +158,6 @@
         // Eliminar un producto por ID
         async function deleteProductoById() {
             const id = document.getElementById('productoIdDelete').value;
-            console.log(id);
             try {
                 const response = await fetch(`http://localhost:9080/productos/${id}`, {
                     method: 'DELETE'
@@ -152,17 +169,17 @@
         }
 
         // Eliminar un producto por ID
-        async function deleteProductoBySKU() {
-            const sku = document.getElementById('productoIdDeleteSKU').value;
-            try {
-                const response = await fetch(`http://localhost:9080/productos/SKU/${sku}`, {
-                    method: 'DELETE'
-                });
-                document.getElementById('output').textContent = `Producto con SKU ${sku} eliminado.`;
-            } catch (error) {
-                console.error('Error:', error);
-            }
-        }
+        // async function deleteProductoBySKU() {
+        //     const sku = document.getElementById('productoIdDeleteSKU').value;
+        //     try {
+        //         const response = await fetch(`http://localhost:9080/productos/SKU/${sku}`, {
+        //             method: 'DELETE'
+        //         });
+        //         document.getElementById('output').textContent = `Producto con SKU ${sku} eliminado.`;
+        //     } catch (error) {
+        //         console.error('Error:', error);
+        //     }
+        // }
 
         window.onload = function() {
             getColumnsUpdate();
@@ -211,10 +228,10 @@
     <button onclick="deleteProductoById()">Eliminar Producto por ID</button>
     <br><br>
 
-    <!-- Eliminar producto por SKU -->
+    <!-- Eliminar producto por SKU
     <input type="text" id="productoIdDeleteSKU" placeholder="SKU del Producto">
     <button onclick="deleteProductoBySKU()">Eliminar Producto por SKU</button>
-    <br><br>
+    <br><br> -->
 
     <!-- Mostrar resultado de las operaciones -->
     <pre id="output"></pre>

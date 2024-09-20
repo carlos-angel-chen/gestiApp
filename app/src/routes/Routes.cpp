@@ -23,8 +23,8 @@ void setupRoutes(Pistache::Rest::Router& router, DatabaseConnection& dbConn) {
 
     // PRODUCTOS
     Routes::Get(router, "/productos", Routes::bind(&ProductosController::getAllProducts, productosController));
-    Routes::Get(router, "/productos/:id", Routes::bind(&ProductosController::getProductById, productosController));
-    Routes::Get(router, "/productos/:sku", Routes::bind(&ProductosController::getProductBySKU, productosController));
+    Routes::Get(router, "/productos/id/:id", Routes::bind(&ProductosController::getProductById, productosController));
+    Routes::Get(router, "/productos/sku/:sku", Routes::bind(&ProductosController::getProductBySKU, productosController));
     Routes::Post(router, "/productos", Routes::bind(&ProductosController::createProduct, productosController));
     Routes::Put(router, "/productos/:id", Routes::bind(&ProductosController::updateProduct, productosController));
     Routes::Delete(router, "/productos/:id", Routes::bind(&ProductosController::deleteProductById, productosController));
@@ -34,7 +34,8 @@ void setupRoutes(Pistache::Rest::Router& router, DatabaseConnection& dbConn) {
     // Asegúrate de no duplicar las rutas OPTIONS
     Routes::Options(router, "/productos", Routes::bind(&handleOptions));
     Routes::Options(router, "/productos/:id", Routes::bind(&handleOptions));
-    Routes::Options(router, "/productos/SKU/:sku", Routes::bind(&handleOptions));
+    Routes::Options(router, "/productos/id/:id", Routes::bind(&handleOptions));
+    Routes::Options(router, "/productos/sku/:sku", Routes::bind(&handleOptions));
 
     // CLIENTES
     Routes::Get(router, "/clientes", Routes::bind(&ClientesController::getAllClients, clientesController));

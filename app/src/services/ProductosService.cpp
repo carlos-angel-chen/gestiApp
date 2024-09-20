@@ -7,7 +7,33 @@ std::vector<Productos> ProductosService::getAllProducts() {
     try
     {
         pqxx::work txn(*dbConn.getConnection());
-        pqxx::result res = txn.exec("SELECT * FROM public.\"Productos\"");
+        std::string query = R"(SELECT
+                producto.id,
+                producto."SKU",
+                producto.nombre,
+                tipo.nombre AS tipo_producto,
+                producto.stock_minimo,
+                producto.stock_actual,
+                precio.costo AS costo,
+                precio.precio_venta,
+                precio.precio_sin_iva,
+                precio.precio_con_iva,
+                precio.precio_minorista,
+                precio.precio_mayorista,
+                precio.precio_venta_minimo
+            FROM
+                public."Productos" producto
+            LEFT JOIN
+                public."Precios" precio
+            ON
+                producto.id = precio.id_producto
+            LEFT JOIN
+                public."TipoProductos" tipo
+            ON
+                producto.id_tipo = tipo.id
+            ORDER BY producto.id ASC;
+        )";
+        pqxx::result res = txn.exec_params(query);
 
         std::vector<Productos> productos;
         for (auto row : res) {
@@ -15,9 +41,16 @@ std::vector<Productos> ProductosService::getAllProducts() {
                 row["id"].as<int>(),
                 row["\"SKU\""].as<std::string>(),
                 row["nombre"].as<std::string>(),
-                !row["stock_minimo"].is_null() ? row["stock_minimo"].as<std::string>() : "", // Manejar valores NULL
-                !row["stock_actual"].is_null() ? row["stock_actual"].as<std::string>() : "", // Manejar valores NULL
-                !row["id_tipo"].is_null() ? row["id_tipo"].as<std::string>() : ""            // Manejar valores NULL
+                row["tipo_producto"].as<std::string>(),
+                row["stock_minimo"].as<int>(),
+                row["stock_actual"].as<int>(),
+                row["costo"].as<float>(),
+                row["precio_venta"].as<float>(),
+                row["precio_sin_iva"].as<float>(),
+                row["precio_con_iva"].as<float>(),
+                row["precio_minorista"].as<float>(),
+                row["precio_mayorista"].as<float>(),
+                row["precio_venta_minimo"].as<float>()
             };
             productos.push_back(p);
         }
@@ -32,7 +65,30 @@ std::vector<Productos> ProductosService::getAllProducts() {
 Productos ProductosService::getProductById(int id) {
     try{
         pqxx::work txn(*dbConn.getConnection());
-        pqxx::result res = txn.exec("SELECT * FROM public.\"Productos\" WHERE id = " + txn.quote(id));
+        std::string query = R"(
+            SELECT 
+                producto.id, 
+                producto."SKU", 
+                producto.nombre, 
+                tipo.nombre AS tipo_producto, 
+                producto.stock_minimo, 
+                producto.stock_actual, 
+                precio.costo AS costo, 
+                precio.precio_venta, 
+                precio.precio_sin_iva, 
+                precio.precio_con_iva, 
+                precio.precio_minorista, 
+                precio.precio_mayorista, 
+                precio.precio_venta_minimo
+            FROM public."Productos" producto
+            LEFT JOIN public."Precios" precio 
+                ON producto.id = precio.id_producto
+            LEFT JOIN public."TipoProductos" tipo 
+                ON producto.id_tipo = tipo.id
+            WHERE producto.id = $1;
+        )";
+        std::cout << "ID: " << id << std::endl;
+        pqxx::result res = txn.exec_params(query, id);
 
         if (res.size() != 1) {
             throw std::runtime_error("Producto no encontrado");
@@ -43,9 +99,16 @@ Productos ProductosService::getProductById(int id) {
             row["id"].as<int>(),
             row["\"SKU\""].as<std::string>(),
             row["nombre"].as<std::string>(),
-            row["stock_minimo"].is_null() ? std::nullopt : std::optional<std::string>(row["stock_minimo"].as<std::string>()),
-            row["stock_actual"].is_null() ? std::nullopt : std::optional<std::string>(row["stock_actual"].as<std::string>()),
-            row["id_tipo"].is_null() ? std::nullopt : std::optional<std::string>(row["id_tipo"].as<std::string>())
+            row["tipo_producto"].as<std::string>(),
+            row["stock_minimo"].as<int>(),
+            row["stock_actual"].as<int>(),
+            row["costo"].as<float>(),
+            row["precio_venta"].as<float>(),
+            row["precio_sin_iva"].as<float>(),
+            row["precio_con_iva"].as<float>(),
+            row["precio_minorista"].as<float>(),
+            row["precio_mayorista"].as<float>(),
+            row["precio_venta_minimo"].as<float>()
         };
 
         txn.commit();
@@ -60,7 +123,35 @@ Productos ProductosService::getProductById(int id) {
 std::vector<Productos> ProductosService::getProductBySKU(const std::string& sku){
     try{
         pqxx::work txn(*dbConn.getConnection());
-        pqxx::result res = txn.exec("SELECT * FROM public.\"Productos\" WHERE \"SKU\" = " + txn.quote(sku));
+        std::string searchPattern = "%" + sku + "%";
+        std::string query = R"(SELECT
+                producto.id,
+                producto."SKU",
+                producto.nombre,
+                tipo.nombre AS tipo_producto,
+                producto.stock_minimo,
+                producto.stock_actual,
+                precio.costo AS costo,
+                precio.precio_venta,
+                precio.precio_sin_iva,
+                precio.precio_con_iva,
+                precio.precio_minorista,
+                precio.precio_mayorista,
+                precio.precio_venta_minimo
+            FROM
+                public."Productos" producto
+            LEFT JOIN
+                public."Precios" precio
+            ON
+                producto.id = precio.id_producto
+            LEFT JOIN
+                public."TipoProductos" tipo
+            ON
+                producto.id_tipo = tipo.id
+            WHERE producto."SKU" LIKE $1;
+        )";
+        pqxx::result res = txn.exec_params(query, searchPattern);
+        //pqxx::result res = txn.exec("SELECT * FROM public.\"Productos\" WHERE \"SKU\" = " + txn.quote(sku));
         
         std::vector<Productos> productos;
         for (auto row : res){
@@ -68,9 +159,16 @@ std::vector<Productos> ProductosService::getProductBySKU(const std::string& sku)
                 row["id"].as<int>(),
                 row["\"SKU\""].as<std::string>(),
                 row["nombre"].as<std::string>(),
-                row["stock_minimo"].is_null() ? std::nullopt : std::optional<std::string>(row["stock_minimo"].as<std::string>()),
-                row["stock_actual"].is_null() ? std::nullopt : std::optional<std::string>(row["stock_actual"].as<std::string>()),
-                row["id_tipo"].is_null() ? std::nullopt : std::optional<std::string>(row["id_tipo"].as<std::string>())
+                row["tipo_producto"].as<std::string>(),
+                row["stock_minimo"].as<int>(),
+                row["stock_actual"].as<int>(),
+                row["costo"].as<float>(),
+                row["precio_venta"].as<float>(),
+                row["precio_sin_iva"].as<float>(),
+                row["precio_con_iva"].as<float>(),
+                row["precio_minorista"].as<float>(),
+                row["precio_mayorista"].as<float>(),
+                row["precio_venta_minimo"].as<float>()
             };
             productos.push_back(p);
         }
@@ -86,37 +184,25 @@ std::vector<Productos> ProductosService::getProductBySKU(const std::string& sku)
 void ProductosService::createProduct(const Productos& productos) {
     try{
         pqxx::work txn(*dbConn.getConnection());
-
-        // Inicia la consulta base con las columnas obligatorias
-        std::string query = "INSERT INTO public.\"Productos\" (\"SKU\", \"nombre\", \"id_tipo\"";
-
-        // Verifica si stock_minimo no es nulo, en ese caso agrega la columna a la consulta
-        if (productos.stock_minimo.has_value() && productos.stock_minimo!="") {
-            query += ", \"stock_minimo\"";
+        int id_tipo;
+        if (productos.tipo_producto == "Insumos"){
+            id_tipo = 1;
         }
-
-        // Verifica si stock_actual no es nulo, en ese caso agrega la columna a la consulta
-        if (productos.stock_actual.has_value() && productos.stock_actual!="") {
-            query += ", \"stock_actual\"";
+        else {
+            id_tipo = 2;
         }
+        std::string queryProducto = R"(INSERT INTO public."Productos"
+                ("SKU", "nombre", "id_tipo", "stock_minimo", "stock_actual")
+                VALUES
+                ($1, $2, $3, $4, $5);)";
+        txn.exec_params(queryProducto, productos.sku, productos.nombre, id_tipo, productos.stock_minimo, productos.stock_actual);
 
-        // Cierra la parte de las columnas
-        query += ") VALUES (" + txn.quote(productos.sku) + ", " + txn.quote(productos.nombre) + ", " + txn.quote(productos.id_tipo);
+        std::string queryPrecio = R"(INSERT INTO public."Precios"
+                ("id_producto", "costo", "precio_venta", "precio_sin_iva", "precio_con_iva", "precio_minorista", "precio_mayorista", "precio_venta_minimo")
+            VALUES
+                ((SELECT id FROM public."Productos" ORDER BY id DESC LIMIT 1), $1, $2, $3, $4, $5, $6, $7);)";
+        txn.exec_params(queryPrecio, productos.costo, productos.precio_venta, productos.precio_sin_iva, productos.precio_con_iva, productos.precio_minorista, productos.precio_mayorista, productos.precio_venta_minimo);
 
-        // Agrega los valores para stock_minimo y stock_actual si están presentes
-        if (productos.stock_minimo.has_value() && productos.stock_minimo!="") {
-            query += ", " + txn.quote(productos.stock_minimo.value());
-        }
-
-        if (productos.stock_actual.has_value() && productos.stock_actual!="") {
-            query += ", " + txn.quote(productos.stock_actual.value());
-        }
-
-        // Cierra la consulta SQL
-        query += ")";
-
-        // Ejecuta la consulta y realiza el commit
-        txn.exec(query);
         txn.commit();
     }
     catch(const std::exception& e) {
@@ -128,29 +214,35 @@ void ProductosService::createProduct(const Productos& productos) {
 Productos ProductosService::updateProductById(const Productos& productos){
     try{
         pqxx::work txn(*dbConn.getConnection());
-        std::string query = "UPDATE public.\"Productos\" SET ";
-        query += "\"SKU\" = " + txn.quote(productos.sku) + ", ";
-        query += "\"nombre\" = " + txn.quote(productos.nombre) + ", ";
-        query += "\"stock_minimo\" = " + txn.quote(productos.stock_minimo.value_or("")) + ", ";
-        query += "\"stock_actual\" = " + txn.quote(productos.stock_actual.value_or("")) + ", ";
-        query += "\"id_tipo\" = " + txn.quote(productos.id_tipo.value_or("")) + " ";
-        query += "WHERE \"id\" = " + txn.quote(productos.id) + " RETURNING *";
-        
-        txn.exec(query);
+        int id_tipo;
+        if (productos.tipo_producto == "Insumos"){
+            id_tipo = 1;
+        }
+        else {
+            id_tipo = 2;
+        }
+        std::string queryProducto = R"(UPDATE public."Productos" SET
+                "SKU" = $1,
+                "nombre" = $2,
+                "id_tipo" = $3,
+                "stock_minimo" = $4,
+                "stock_actual" = $5
+            WHERE id = $6;)";
+        txn.exec_params(queryProducto, productos.sku, productos.nombre, id_tipo, productos.stock_minimo, productos.stock_actual, productos.id);
 
-        pqxx::result res = txn.exec("SELECT * FROM public.\"Productos\" WHERE id = " + txn.quote(productos.id));
-
-        auto row = res[0];
-        Productos p = {
-            row["id"].as<int>(),
-            row["\"SKU\""].as<std::string>(),
-            row["nombre"].as<std::string>(),
-            row["stock_minimo"].is_null() ? std::nullopt : std::optional<std::string>(row["stock_minimo"].as<std::string>()),
-            row["stock_actual"].is_null() ? std::nullopt : std::optional<std::string>(row["stock_actual"].as<std::string>()),
-            row["id_tipo"].is_null() ? std::nullopt : std::optional<std::string>(row["id_tipo"].as<std::string>())
-        };
-
+        std::string queryPrecio = R"(UPDATE public."Precios" SET
+                "costo" = $1,
+                "precio_venta" = $2,
+                "precio_sin_iva" = $3,
+                "precio_con_iva" = $4,
+                "precio_minorista" = $5,
+                "precio_mayorista" = $6,
+                "precio_venta_minimo" = $7
+            WHERE id_producto = $8;)";
+        txn.exec_params(queryPrecio, productos.costo, productos.precio_venta, productos.precio_sin_iva, productos.precio_con_iva, productos.precio_minorista, productos.precio_mayorista, productos.precio_venta_minimo, productos.id);
         txn.commit();
+        
+        Productos p = getProductById(productos.id);
         return p;
     }
     catch (const std::exception& e) {
@@ -162,6 +254,7 @@ Productos ProductosService::updateProductById(const Productos& productos){
 void ProductosService::deleteProductById(int id) {
     try{
         pqxx::work txn(*dbConn.getConnection());
+        txn.exec("DELETE FROM public.\"Precios\" WHERE id_producto = " + txn.quote(id));
         txn.exec("DELETE FROM public.\"Productos\" WHERE id = " + txn.quote(id));
         txn.commit();
     }
@@ -180,7 +273,32 @@ void ProductosService::deleteProductById(int id) {
 std::vector<std::string> ProductosService::getColumns() {
     try{
         pqxx::work txn(*dbConn.getConnection());
-        pqxx::result res = txn.exec("SELECT column_name FROM information_schema.columns WHERE table_name = 'Productos' AND table_schema = 'public'");
+        std::string query = R"(SELECT 'id' AS column_name
+            UNION ALL
+            SELECT 'SKU' AS column_name
+            UNION ALL
+            SELECT 'nombre' AS column_name
+            UNION ALL
+            SELECT 'tipo_producto' AS column_name
+            UNION ALL
+            SELECT 'stock_minimo' AS column_name
+            UNION ALL
+            SELECT 'stock_actual' AS column_name
+            UNION ALL
+            SELECT 'costo' AS column_name
+            UNION ALL
+            SELECT 'precio_venta' AS column_name
+            UNION ALL
+            SELECT 'precio_sin_iva' AS column_name
+            UNION ALL
+            SELECT 'precio_con_iva' AS column_name
+            UNION ALL
+            SELECT 'precio_minorista' AS column_name
+            UNION ALL
+            SELECT 'precio_mayorista' AS column_name
+            UNION ALL
+            SELECT 'precio_venta_minimo' AS column_name)";
+        pqxx::result res = txn.exec(query);
 
         std::vector<std::string> columns;
         for (auto row : res) {

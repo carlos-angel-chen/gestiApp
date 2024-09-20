@@ -83,9 +83,16 @@ void ProductosController::createProduct(const Rest::Request& request, Http::Resp
             0,
             jsonBody["SKU"].get<std::string>(),
             jsonBody["nombre"].get<std::string>(),
-            jsonBody.contains("stock_minimo") ? std::optional<std::string>(jsonBody["stock_minimo"].get<std::string>()) : std::nullopt,
-            jsonBody.contains("stock_actual") ? std::optional<std::string>(jsonBody["stock_actual"].get<std::string>()) : std::nullopt,
-            jsonBody["id_tipo"].get<std::string>()
+            jsonBody["tipo_producto"].get<std::string>(),
+            jsonBody["stock_minimo"].get<int>(),
+            jsonBody["stock_actual"].get<int>(),
+            jsonBody["costo"].get<float>(),
+            jsonBody["precio_venta"].get<float>(),
+            jsonBody["precio_sin_iva"].get<float>(),
+            jsonBody["precio_con_iva"].get<float>(),
+            jsonBody["precio_minorista"].get<float>(),
+            jsonBody["precio_mayorista"].get<float>(),
+            jsonBody["precio_venta_minimo"].get<float>()
         };
 
         productService.createProduct(producto);
@@ -96,11 +103,12 @@ void ProductosController::createProduct(const Rest::Request& request, Http::Resp
         response.send(Http::Code::Created, "Producto creado");
     } catch (const std::exception& e) {
         // Encabezados CORS en caso de error también
+        json errorResponse = {{"error", "Error al crear producto"}};
         response.headers()
             .add<Http::Header::AccessControlAllowOrigin>("*")
             .add<Http::Header::AccessControlAllowMethods>("GET, POST, PUT, DELETE, OPTIONS")
             .add<Http::Header::AccessControlAllowHeaders>("Content-Type, Accept");
-        response.send(Http::Code::Internal_Server_Error, "Error al crear producto");
+        response.send(Http::Code::Internal_Server_Error, errorResponse.dump());
     }
 }
 
@@ -111,9 +119,16 @@ void ProductosController::updateProduct(const Rest::Request& request, Http::Resp
             request.param(":id").as<int>(),
             jsonBody["SKU"].get<std::string>(),
             jsonBody["nombre"].get<std::string>(),
-            jsonBody.contains("stock_minimo") ? std::optional<std::string>(jsonBody["stock_minimo"].get<std::string>()) : std::nullopt,
-            jsonBody.contains("stock_actual") ? std::optional<std::string>(jsonBody["stock_actual"].get<std::string>()) : std::nullopt,
-            jsonBody["id_tipo"].get<std::string>()
+            jsonBody["tipo_producto"].get<std::string>(),
+            jsonBody["stock_minimo"].get<int>(),
+            jsonBody["stock_actual"].get<int>(),
+            jsonBody["costo"].get<float>(),
+            jsonBody["precio_venta"].get<float>(),
+            jsonBody["precio_sin_iva"].get<float>(),
+            jsonBody["precio_con_iva"].get<float>(),
+            jsonBody["precio_minorista"].get<float>(),
+            jsonBody["precio_mayorista"].get<float>(),
+            jsonBody["precio_venta_minimo"].get<float>()
         };
 
         auto productoUpdated = productService.updateProductById(producto);
@@ -125,11 +140,12 @@ void ProductosController::updateProduct(const Rest::Request& request, Http::Resp
         response.send(Http::Code::Ok, jsonResponse.dump());
     } catch (const std::exception& e) {
         // Encabezados CORS en caso de error también
+        json errorResponse = {{"error", "Error al actualizar producto"}};
         response.headers()
             .add<Http::Header::AccessControlAllowOrigin>("*")
             .add<Http::Header::AccessControlAllowMethods>("GET, POST, PUT, DELETE, OPTIONS")
             .add<Http::Header::AccessControlAllowHeaders>("Content-Type, Accept");
-        response.send(Http::Code::Internal_Server_Error, "Error al actualizar producto");
+        response.send(Http::Code::Internal_Server_Error, errorResponse.dump());
     }
 }
 

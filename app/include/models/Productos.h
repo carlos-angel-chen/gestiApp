@@ -10,9 +10,16 @@ public:
     int id;
     std::string sku;
     std::string nombre;
-    std::optional<std::string> stock_minimo;
-    std::optional<std::string> stock_actual;
-    std::optional<std::string> id_tipo;
+    std::string tipo_producto;
+    int stock_minimo;
+    int stock_actual;
+    float costo;
+    float precio_venta;
+    float precio_sin_iva;
+    float precio_con_iva;
+    float precio_minorista;
+    float precio_mayorista;
+    float precio_venta_minimo;
 
     Productos() = default;
 
@@ -20,9 +27,16 @@ public:
         int id,
         const std::string& sku,
         const std::string& nombre,
-        std::optional<std::string> stock_minimo,
-        std::optional<std::string> stock_actual,
-        std::optional<std::string> id_tipo
+        const std::string& tipo_producto,
+        int stock_minimo,
+        int stock_actual,
+        float costo,
+        float precio_venta,
+        float precio_sin_iva,
+        float precio_con_iva,
+        float precio_minorista,
+        float precio_mayorista,
+        float precio_venta_minimo
     );
 
     // Métodos adicionales si son necesarios (como validaciones o transformaciones)
