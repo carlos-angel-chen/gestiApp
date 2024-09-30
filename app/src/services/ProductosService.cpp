@@ -87,7 +87,6 @@ Productos ProductosService::getProductById(int id) {
                 ON producto.id_tipo = tipo.id
             WHERE producto.id = $1;
         )";
-        std::cout << "ID: " << id << std::endl;
         pqxx::result res = txn.exec_params(query, id);
 
         if (res.size() != 1) {

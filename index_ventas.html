@@ -1,0 +1,780 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Gestión de Ventas</title>
+    <script>
+        // VER VENTAS 
+        async function getAllVentas() {
+            
+        }
+
+        // PRODUCTOS
+        async function getProductoBySku(){
+            const sku = document.getElementById('sku').value;
+            try{
+                const response = await fetch(`http://localhost:9080/productos/sku/${sku}`);
+                const productos = await response.json();
+
+                if (productos.length === 0) {
+                    document.getElementById('output').innerHTML = `<p>No se encontraron productos con ese SKU.</p>`;
+                    return;
+                }
+
+                let outputHTML = `
+                    <table border="1">
+                        <thead>
+                            <tr>
+                                <th>ID</th>
+                                <th>SKU</th>
+                                <th>Nombre</th>
+                                <th>Stock Actual</th>
+                                <th>Precio Venta</th>
+                                <th>Cantidad</th>
+                                <th>Acciones</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                `;
+                productos.forEach((productos, index) => {
+                    outputHTML += `
+                        <tr>
+                            <td>${productos.id}</td>
+                            <td>${productos["\"SKU\""]}</td>
+                            <td>${productos.nombre}</td>
+                            <td>${productos.stock_actual}</td>
+                            <td>$${productos.precio_venta.toFixed(2)}</td>
+                            <td><input type="number" id="cantidad-${index}" name="cantidad" value="1" min="1" max="${productos.stock_actual}"></td>
+                            <td><button onclick="agregarAlCarrito(${index}, ${productos.id}, '${productos["\"SKU\""]}', '${productos.nombre}', '${productos.tipo_producto}', '${productos.costo}', ${productos.precio_venta}, '${productos.precio_sin_iva}', '${productos.precio_con_iva}', '${productos.precio_minorista}', '${productos.precio_mayorista}', '${productos.precio_venta_minimo}')">Agregar al carrito</button></td>
+                        </tr>
+                    `;
+                });
+
+                outputHTML += `
+                        </tbody>
+                    </table>
+                `;
+                document.getElementById('output').innerHTML = outputHTML;
+                
+            } catch (error){
+                console.error(error);
+            }
+        }
+
+        let carrito = [];
+
+        function agregarAlCarrito(index, id, sku, nombre, tipo_producto, costo, precio_venta, precio_sin_iva, precio_con_iva, precio_minorista, precio_mayorista, precio_venta_minimo) {
+            const cantidad = parseInt(document.getElementById(`cantidad-${index}`).value);
+
+            // Buscar si el producto ya está en el carrito
+            const productoEnCarrito = carrito.find(item => item.id === id);
+
+            if (productoEnCarrito) {
+                // Si el producto ya está en el carrito, actualizamos la cantidad
+                productoEnCarrito.cantidad += cantidad;
+            } else {
+                // Si no está en el carrito, lo agregamos
+                carrito.push({
+                    id: id,
+                    sku: sku,
+                    nombre: nombre,
+                    tipo_producto: tipo_producto,
+                    costo: costo,
+                    precio_venta: precio_venta,
+                    precio_sin_iva: precio_sin_iva,
+                    precio_con_iva: precio_con_iva,
+                    precio_minorista: precio_minorista,
+                    precio_mayorista: precio_mayorista,
+                    precio_venta_minimo: precio_venta_minimo,
+                    cantidad: cantidad
+                });
+            }
+
+            mostrarCarrito();
+        }
+        let subTotal;
+        function mostrarCarrito() {
+            if (carrito.length === 0) {
+                document.getElementById('carrito').innerHTML = `<p>El carrito está vacío</p>`;
+                return;
+            }
+
+            let carritoHTML = `
+                <table border="1">
+                    <thead>
+                        <tr>
+                            <th>ID</th>
+                            <th>Nombre</th>
+                            <th>Cantidad</th>
+                            <th>Precio Unitario</th>
+                            <th>Total</th>
+                            <th>Acciones</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+            `;
+
+            carrito.forEach(producto => {
+                carritoHTML += `
+                    <tr>
+                        <td>${producto.id}</td>
+                        <td>${producto.nombre}</td>
+                        <td>${producto.cantidad}</td>
+                        <td>$${producto.precio_venta.toFixed(2)}</td>
+                        <td>$${(producto.cantidad * producto.precio_venta).toFixed(2)}</td>
+                        <td><button onclick="eliminarDelCarrito(${producto.id}, ${producto.cantidad}, ${producto.precio_venta})">Eliminar</button></td>
+                    </tr>
+                `;
+            });
+            subTotal = 0;
+            document.getElementById('carrito').innerHTML = carritoHTML;
+            // actualizarSubTotal();  // Opcional: si necesitas actualizar algún total global
+            carrito.forEach(producto => {
+                subTotal += producto.cantidad * producto.precio_venta;
+            });
+
+            document.getElementById('subTotal').textContent = `Subtotal: $${subTotal.toFixed(2)}`;
+
+            carritoHTML += `
+                    </tbody>
+                </table>
+                
+            `;
+        }
+
+        function eliminarDelCarrito(id, cantidad, precio_venta) {
+            carrito = carrito.filter(producto => producto.id !== id);
+            mostrarCarrito();
+        }
+
+        // CLIENTES
+
+        // Check if client exists
+        async function verificarCliente(){
+            const cuit = document.getElementById('cuit').value;
+            try {
+                const response = await fetch(`http://localhost:9080/clientes/cuit/${cuit}`);
+                const clientes = await response.json();
+
+                // if(clientes.length === 0){
+                //     document.getElementById('output').innerHTML = `<p>No se encontraron clientes con ese CUIT.</p>`;
+                //     return;
+                // }
+
+                let outputHTML = `
+                    <table border="1">
+                        <thead>
+                            <tr>
+                                <th>ID</th>
+                                <th>Razon Social</th>
+                                <th>CUIT</th>
+                                <th>Tributacion</th>
+                                <th>Telefono</th>
+                                <th>Email</th>
+                                <th>nombre</th>
+                                <th>Direccion Fiscal</th>
+                                <th>Direccion de Entrega</th>
+                                <th>Localidad</th>
+                                <th>Codigo Postal</th>
+                                <th>WhatsApp</th>
+                                <th>Accion</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                `;
+                clientes.forEach((clientes, index) => {
+                    outputHTML += `
+                        <tr>
+                            <td>${clientes.id}</td>
+                            <td>${clientes.razon_social}</td>
+                            <td>${clientes["\"CUIT\""]}</td>
+                            <td>${clientes.tributacion}</td>
+                            <td>${clientes.telefono}</td>
+                            <td>${clientes.email}</td>
+                            <td>${clientes.nombre}</td>
+                            <td>${clientes.direccion_fiscal}</td>
+                            <td>${clientes.direccion_entrega}</td>
+                            <td>${clientes.localidad}</td>
+                            <td>${clientes.cp}</td>
+                            <td>${clientes.whatsapp}</td>
+                            <td><button onclick="seleccionarCliente(${index}, ${clientes.id}, '${clientes.razon_social}', '${clientes["\"CUIT\""]}', '${clientes.tributacion}', '${clientes.telefono}', '${clientes.email}', '${clientes.nombre}', '${clientes.direccion_fiscal}', '${clientes.direccion_entrega}', '${clientes.localidad}', '${clientes.cp}', '${clientes.whatsapp}')">Seleccionar cliente</button></td>
+                        </tr>
+                    `;
+                });
+
+                outputHTML += `
+                        </tbody>
+                    </table>
+                `;
+                document.getElementById('output').innerHTML = outputHTML;
+
+            } catch (error) {
+                console.error('Error al verificar cliente:', error);
+            }
+        }
+
+        // Add new client
+        async function agregarCliente() {
+            const clienteData = {
+                razon_social: document.getElementById('razonSocial').value,
+                CUIT: document.getElementById('nuevoCuit').value,
+                tributacion: document.getElementById('tributacion').value,
+                telefono: document.getElementById('telefono').value,
+                email: document.getElementById('email').value,
+                nombre: document.getElementById('nombreCliente').value,
+                direccion_fiscal: document.getElementById('direccionFiscal').value,
+                direccion_entrega: document.getElementById('direccionEntrega').value,
+                localidad: document.getElementById('localidad').value,
+                cp: document.getElementById('cp').value,
+                whatsapp: document.getElementById('whatsApp').value
+            };
+
+            try {
+                const response = await fetch(`http://localhost:9080/clientes`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify(clienteData)
+                });
+                // Verifica si la respuesta es texto en lugar de JSON
+                const contentType = response.headers.get("content-type");
+                let result;
+                if (contentType && contentType.includes("application/json")) {
+                    result = await response.json();
+                    clienteSeleccionado = result;
+                    document.getElementById('clienteInfo').innerHTML = `<p>Cliente creado: ${result.nombre}</p>`;
+                } else {
+                    result = await response.text();  // Procesa como texto si no es JSON
+                    document.getElementById('clienteInfo').innerHTML = `<p>${result}</p>`;
+                }
+            } catch (error) {
+                console.error('Error al agregar cliente:', error);
+            }
+        }
+        
+        let clienteSeleccionado;
+        // Seleccionar el cliente para continuar con la compra
+        function seleccionarCliente(index, id, razon_social, CUIT, tributacion, telefono, email, nombre, direccion_fiscal, direccion_entrega, localidad, cp, whatsapp) {
+            clienteSeleccionado = {
+                id: id,
+                razon_social: razon_social,
+                CUIT: CUIT,
+                tributacion: tributacion,
+                telefono: telefono,
+                email: email,
+                nombre: nombre,
+                direccion_fiscal: direccion_fiscal,
+                direccion_entrega: direccion_entrega,
+                localidad: localidad,
+                cp: cp,
+                whatsapp: whatsapp
+            };
+            mostrarClienteSeleccionado();  // Muestra el cliente seleccionado
+        }
+
+        function mostrarClienteSeleccionado(){
+            let clienteHTML = `
+                <table border="1">
+                    <thead>
+                        <tr>
+                            <th>ID</th>
+                            <th>Razon Social</th>
+                            <th>CUIT</th>
+                            <th>Tributacion</th>
+                            <th>Telefono</th>
+                            <th>Email</th>
+                            <th>nombre</th>
+                            <th>Direccion Fiscal</th>
+                            <th>Direccion de Entrega</th>
+                            <th>Localidad</th>
+                            <th>Codigo Postal</th>
+                            <th>WhatsApp</th>
+                            <th>Accion</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+            `;
+            if (clienteSeleccionado) {
+                clienteHTML += `
+                <tr>
+                    <td>${clienteSeleccionado.id}</td>
+                    <td>${clienteSeleccionado.razon_social}</td>
+                    <td>${clienteSeleccionado["\"CUIT\""]}</td>
+                    <td>${clienteSeleccionado.tributacion}</td>
+                    <td>${clienteSeleccionado.telefono}</td>
+                    <td>${clienteSeleccionado.email}</td>
+                    <td>${clienteSeleccionado.nombre}</td>
+                    <td>${clienteSeleccionado.direccion_fiscal}</td>
+                    <td>${clienteSeleccionado.direccion_entrega}</td>
+                    <td>${clienteSeleccionado.localidad}</td>
+                    <td>${clienteSeleccionado.cp}</td>
+                    <td>${clienteSeleccionado.whatsapp}</td>
+                    <td><button onclick="deselectCliente()">Eliminar</button></td>
+                </tr>
+                `;
+            }
+            else{
+                clienteHTML += `
+                        </tbody>
+                    </table>
+                `;
+            }
+            document.getElementById('clienteSeleccionado').innerHTML = clienteHTML;
+        }
+
+        function deselectCliente(){
+            clienteSeleccionado = null;
+            mostrarClienteSeleccionado();
+        }
+
+        // LOGISTICA
+        async function getAllLogistica(){
+            try {
+                const response = await fetch(`http://localhost:9080/logistica`);
+                const logisticas = await response.json();
+
+                let outputHTML = `
+                    <table border="1">
+                        <thead>
+                            <tr>
+                                <th>ID</th>
+                                <th>Razon Social</th>
+                                <th>CUIT</th>
+                                <th>Direccion</th>
+                                <th>Tipo</th>
+                                <th>Nombre</th>
+                                <th>Telefono</th>
+                                <th>Accion</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                `;
+                logisticas.forEach((logisticas, index) => {
+                    outputHTML += `
+                        <tr>
+                            <td>${logisticas.id}</td>
+                            <td>${logisticas.razon_social}</td>
+                            <td>${logisticas["\"CUIT\""]}</td>
+                            <td>${logisticas.direccion}</td>
+                            <td>${logisticas.tipo}</td>
+                            <td>${logisticas.nombre}</td>
+                            <td>${logisticas.telefono}</td>
+                            <td><button onclick="seleccionarLogistica(${index}, ${logisticas.id}, '${logisticas.razon_social}', '${logisticas["\"CUIT\""]}', '${logisticas.direccion}', '${logisticas.tipo}', '${logisticas.nombre}', '${logisticas.telefono}')">Seleccionar logistica</button></td>
+                        </tr>
+                    `;
+                });
+
+                outputHTML += `
+                        </tbody>
+                    </table>
+                `;
+                document.getElementById('output').innerHTML = outputHTML;
+
+            } catch (error) {
+                console.error('Error al verificar logistica:', error);
+            }
+        }
+        let logisticaSeleccionada;
+        // Seleccionar el cliente para continuar con la compra
+        function seleccionarLogistica(index, id, razon_social, CUIT, direccion, tipo, nombre, telefono) {
+            logisticaSeleccionada = {
+                id: id,
+                razon_social: razon_social,
+                CUIT: CUIT,
+                direccion: direccion,
+                tipo: tipo,
+                nombre: nombre,
+                telefono: telefono,
+            };
+            mostrarLogisticaSeleccionada();  // Muestra el cliente seleccionado
+        }
+
+        function mostrarLogisticaSeleccionada(){
+            let logisticaHTML = `
+                <table border="1">
+                    <thead>
+                        <tr>
+                            <th>ID</th>
+                            <th>Razon Social</th>
+                            <th>CUIT</th>
+                            <th>Direccion</th>
+                            <th>Tipo</th>
+                            <th>Nombre</th>
+                            <th>Telefono</th>
+                            <th>Accion</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+            `;
+            if (logisticaSeleccionada) {
+                logisticaHTML += `
+                <tr>
+                    <td>${logisticaSeleccionada.id}</td>
+                    <td>${logisticaSeleccionada.razon_social}</td>
+                    <td>${logisticaSeleccionada["\"CUIT\""]}</td>
+                    <td>${logisticaSeleccionada.direccion}</td>
+                    <td>${logisticaSeleccionada.tipo}</td>
+                    <td>${logisticaSeleccionada.nombre}</td>
+                    <td>${logisticaSeleccionada.telefono}</td>
+                    <td><button onclick="deselectLogistica()">Eliminar</button></td>
+                </tr>
+                `;
+            }
+            else{
+                logisticaHTML += `
+                        </tbody>
+                    </table>
+                `;
+            }
+            document.getElementById('logisticaSeleccionada').innerHTML = logisticaHTML;
+        }
+
+        function deselectLogistica(){
+            logisticaSeleccionada = null;
+            mostrarLogisticaSeleccionada();
+        }
+
+        // DESCUENTO
+        let descuento = 0;
+        let total = 0; 
+        function aplicarDescuento(){
+            descuento = parseFloat(document.getElementById('descuento').value);
+            total = subTotal - descuento;
+            document.getElementById('total').textContent = `Total: $${total.toFixed(2)}`;
+        }
+
+        // METODO DE PAGO
+        let metodoPago;
+        async function getMetodoPagos() {
+            try{
+                const response = await fetch(`http://localhost:9080//metodo_pagos`);
+                const metodoPagos = await response.json();
+
+                let outputHTML = `
+                    <table border="1">
+                        <thead>
+                            <tr>
+                                <th>ID</th>
+                                <th>Nombre</th>
+                                <th>Accion</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                `;
+                metodoPagos.forEach((metodoPagos, index) => {
+                    outputHTML += `
+                        <tr>
+                            <td>${metodoPagos.id}</td>
+                            <td>${metodoPagos.nombre}</td>
+                            <td><button onclick="seleccionarMetodoPagos(${metodoPagos.id}, '${metodoPagos.nombre}')">Seleccionar metodo de pago</button></td>
+                        </tr>
+                    `;
+                });
+
+                outputHTML += `
+                        </tbody>
+                    </table>
+                `;
+                document.getElementById('output').innerHTML = outputHTML;
+            } catch (error){
+                console.error(error);
+            }
+        }
+
+        let metodoPagoSeleccionado;
+        function seleccionarMetodoPagos(id, nombre){
+            metodoPagoSeleccionado = {
+                id: id,
+                nombre: nombre
+            };
+            mostrarMetodoPagos();
+        }
+
+        function mostrarMetodoPagos(){
+            let metodoPagoHTML = `
+                <table border="1">
+                    <thead>
+                        <tr>
+                            <th>ID</th>
+                            <th>Nombre</th>
+                            <th>Accion</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+            `;
+            if (metodoPagoSeleccionado) {
+                metodoPagoHTML += `
+                <tr>
+                    <td>${metodoPagoSeleccionado.id}</td>
+                    <td>${metodoPagoSeleccionado.nombre}</td>
+                    <td><button onclick="deselectMetodoPagos()">Eliminar</button></td>
+                </tr>
+                `;
+            }
+            else{
+                metodoPagoHTML += `
+                        </tbody>
+                    </table>
+                `;
+            }
+            document.getElementById('metodoPagoSeleccionado').innerHTML = metodoPagoHTML;
+        }
+
+        function deselectMetodoPagos(){
+            metodoPagoSeleccionado = null;
+            mostrarMetodoPagos();
+        }
+
+        // OBSERVACIONES
+        let observaciones;
+        function agregarObservaciones(){
+            observaciones = document.getElementById('observaciones').value;
+        }
+
+        // FECHA Y HORARIO
+        function obtenerFechaHoraActual() {
+            const now = new Date();
+
+            const year = now.getFullYear();
+            const month = String(now.getMonth() + 1).padStart(2, '0'); // Los meses van de 0 a 11, por lo que sumamos 1
+            const day = String(now.getDate()).padStart(2, '0');
+            const hours = String(now.getHours()).padStart(2, '0');
+            const minutes = String(now.getMinutes()).padStart(2, '0');
+            const seconds = String(now.getSeconds()).padStart(2, '0');
+
+            const formattedDateTime = `${year}-${month}-${day} ${hours}:${minutes}:${seconds}`;
+            return formattedDateTime;
+        }
+        // FINALIZAR VENTA
+        async function finalizarVenta(){
+            try{
+                const response = await fetch('http://localhost:9080/pedidos/last_id');
+                const pedidoLastId = await response.json();
+
+                const newId = pedidoLastId + 1;
+                
+                // ARMO EL JSON PARA LA TABLA PEDIDOS
+                let newPedido = [];
+                carrito.forEach(item => {
+                    let pedido = {
+                        id: parseInt(newId),
+                        id_producto: parseInt(item.id),
+                        SKU: item.sku,
+                        nombre: item.nombre,
+                        tipo_producto: item.tipo_producto,
+                        cantidad: parseInt(item.cantidad),
+                        costo: parseFloat(item.costo),
+                        precio_venta: parseFloat(item.precio_venta),
+                        precio_sin_iva: parseFloat(item.precio_sin_iva),
+                        precio_con_iva: parseFloat(item.precio_con_iva),
+                        precio_minorista: parseFloat(item.precio_minorista),
+                        precio_mayorista: parseFloat(item.precio_mayorista),
+                        precio_venta_minimo: parseFloat(item.precio_venta_minimo)
+                    };
+                    newPedido.push(pedido);
+                });
+
+                // ARMO EL JSON PARA LA TABLA VENTAS
+                const fechaHora = obtenerFechaHoraActual();
+                const precioFinalUsd = total/1220;
+                let newVenta = {
+                    id_pedido: parseInt(newId),
+                    fecha: fechaHora,
+                    id_cliente: parseInt(clienteSeleccionado.id),
+                    nombre_cliente: clienteSeleccionado.nombre,
+                    id_logistica: parseInt(logisticaSeleccionada.id),
+                    logistica: logisticaSeleccionada.nombre,
+                    id_metodo_pago: parseInt(metodoPagoSeleccionado.id),
+                    metodo_pago: metodoPagoSeleccionado.nombre,
+                    subtotal: parseFloat(subTotal),
+                    descuento: parseFloat(descuento),
+                    precio_final_pesos: parseFloat(total),
+                    precio_final_usd: parseFloat(precioFinalUsd),
+                    observaciones: observaciones
+                }
+
+                // INSERTO EN LA TABLA PEDIDOS
+                // for (let i=0; i<newPedido.length; i++){
+                //     await createPedido(newPedido[i]);
+                // }
+
+                // INSERTO EN LA TABLA DE VENTAS
+                // await createVenta(newVenta);
+
+                // DESCONTAR DEL STOCK
+                for (let i=0; i<newPedido.length; i++){
+                    await descontarStock(newPedido[i]);
+                }
+                
+            }
+            catch (error){
+                console.error(error);
+            }
+        }
+
+        // CREAR PEDIDO
+        async function createPedido(pedido){
+            console.log(pedido);
+            try{
+                const response = await fetch('http://localhost:9080/pedidos', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify(pedido)
+                });
+                const result = await response.text();
+                document.getElementById('output').textContent = result;
+            } catch (error) {
+                console.error('Error al agregar pedido:', error);
+            }
+        }
+
+        // CREAR VENTA
+        async function createVenta(venta){
+            console.log(venta);
+            try{
+                const response = await fetch('http://localhost:9080/ventas', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify(venta)
+                });
+                const result = await response.text();
+                document.getElementById('output').textContent = result;
+            } catch (error) {
+                console.error('Error al agregar venta:', error);
+            }
+        }
+
+        // DESCONTAR DEL STOCK
+        async function descontarStock(pedido){
+            try{
+                const producto = await getProductoById(pedido.id_producto);
+                producto.stock_actual -= pedido.cantidad;
+                console.log(producto);
+                const updateProduct = {
+                    id: parseInt(producto.id),
+                    "\"SKU\"": producto["\"SKU\""],
+                    nombre: producto.nombre,
+                    tipo_producto: producto.tipo_producto,
+                    stock_minimo: parseInt(producto.stock_minimo),
+                    stock_actual: parseInt(producto.stock_actual),
+                    costo: parseFloat(producto.costo),
+                    precio_venta: parseFloat(producto.precio_venta),
+                    precio_sin_iva: parseFloat(producto.precio_sin_iva),
+                    precio_con_iva: parseFloat(producto.precio_con_iva),
+                    precio_minorista: parseFloat(producto.precio_minorista),
+                    precio_mayorista: parseFloat(producto.precio_mayorista),
+                    precio_venta_minimo: parseFloat(producto.precio_venta_minimo)
+                };
+                const result = await updateProductoById(pedido.id_producto, updateProduct);
+                console.log(updateProduct);
+    
+            } catch (error){
+                console.error(error);
+            }
+        }
+
+        async function getProductoById(id){
+            try{
+                const response = await fetch(`http://localhost:9080/productos/id/${id}`);
+                const producto = await response.json();
+                return producto;
+            } catch (error){
+                console.error(error);
+            }
+        }
+
+        async function updateProductoById(id, producto){
+            try{
+                const response = await fetch(`http://localhost:9080/productos/${id}`,{
+                    method: 'PUT',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify(producto)
+                });
+                const result = await response.text();
+                return result;
+            } catch (error){
+                console.error(error);
+            }
+        }
+    </script>
+</head>
+<body>
+    <!-- Obtener producto por SKU -->
+    <input type="text" id="sku" placeholder="SKU del Producto">
+    <button onclick="getProductoBySku()">Obtener Producto por SKU</button>
+    <br><br>
+
+    <!-- Verificar si el cliente ya existe -->
+    <input type="text" id="cuit" placeholder="CUIT del cliente">
+    <button onclick="verificarCliente()">Verificar Cliente</button>
+    <br><br>
+
+    <!-- Buscar logistica -->
+    <button onclick="getAllLogistica()">Mostrar todas las Logistica</button>
+    <br><br>
+
+    <!-- Seleccionar método de pago -->
+    <button onclick="getMetodoPagos()">Obtener Métodos de Pago</button>
+    <br><br>
+
+    <!-- Agregar observaciones -->
+    <input type="text" id="observaciones" placeholder="Observaciones">
+    <button onclick="agregarObservaciones()">Agregar Observaciones</button>
+    <br><br>
+
+    <!-- Formulario para agregar nuevo cliente -->
+    <h3>Nuevo Cliente</h3>
+    <input type="text" id="razonSocial" placeholder="Razón Social">
+    <input type="text" id="nuevoCuit" placeholder="CUIT">
+    <input type="text" id="tributacion" placeholder="Tributación">
+    <input type="text" id="telefono" placeholder="Teléfono">
+    <input type="text" id="email" placeholder="Email">
+    <input type="text" id="nombreCliente" placeholder="Nombre">
+    <input type="text" id="direccionFiscal" placeholder="Direccion Fiscal">
+    <input type="text" id="direccionEntrega" placeholder="Direccion de Entrega">
+    <input type="text" id="localidad" placeholder="Localidad">
+    <input type="text" id="cp" placeholder="Codigo Postal">
+    <input type="text" id="whatsApp" placeholder="WhastApp">
+    <button onclick="agregarCliente()">Agregar Cliente</button>
+    <div id="clienteInfo"></div>
+    <br><br>
+
+    <!-- Aplicar descuento -->
+    <input type="number" id="descuento" placeholder="Descuento" value="0">
+    <button onclick="aplicarDescuento()">Aplicar Descuento</button>
+    <br><br>
+
+    <!-- Mostrar resultado de las operaciones -->
+    <pre id="output"></pre>
+
+    <!-- Mostrar el carrito -->
+    <div id="carrito"></div>
+    
+    <!-- Mostrar el total -->
+    <div id="subTotal"></div>
+
+    <!-- Mostrar el total -->
+     <div id="total"></div>
+
+    <!-- Mostrar el cliente seleccionado -->
+    <div id="clienteSeleccionado"></div>
+
+    <!-- Mostrar la logistica seleccionada -->
+    <div id="logisticaSeleccionada"></div>
+    
+    
+    <div id="metodoPago"></div>
+    <div id="metodoPagoSeleccionado"></div>
+
+    <!-- Finalizar venta -->
+    <button onclick="finalizarVenta()">Finalizar Venta</button>
+</body>
+</html>

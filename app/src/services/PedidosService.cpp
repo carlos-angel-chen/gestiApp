@@ -9,6 +9,7 @@ std::vector<Pedidos> PedidosService::getAllPedidos(){
         pqxx::work txn(*dbConn.getConnection());
         std::string query = R"(SELECT
                 pedido.id,
+                producto.id AS id_producto,
                 producto."SKU",
                 producto.nombre AS nombre,
                 tipo.nombre AS tipo_producto,
@@ -42,6 +43,7 @@ std::vector<Pedidos> PedidosService::getAllPedidos(){
         for (auto row : res){
             Pedidos p = {
                 row["id"].as<int>(),
+                row["id_producto"].as<int>(),
                 row["\"SKU\""].as<std::string>(),
                 row["nombre"].as<std::string>(),
                 row["tipo_producto"].as<std::string>(),
@@ -72,6 +74,7 @@ std::vector<Pedidos> PedidosService::getPedidoById(int id){
         pqxx::work txn(*dbConn.getConnection());
         std::string query = R"(SELECT
                 pedido.id,
+                producto.id AS id_producto,
                 producto."SKU",
                 producto.nombre AS nombre,
                 tipo.nombre AS tipo_producto,
@@ -106,6 +109,7 @@ std::vector<Pedidos> PedidosService::getPedidoById(int id){
         for (auto row : res){
             Pedidos p = {
                 row["id"].as<int>(),
+                row["id_producto"].as<int>(),
                 row["\"SKU\""].as<std::string>(),
                 row["nombre"].as<std::string>(),
                 row["tipo_producto"].as<std::string>(),
@@ -130,11 +134,47 @@ std::vector<Pedidos> PedidosService::getPedidoById(int id){
     }
 }
 
+void PedidosService::createPedido(const Pedidos& pedidos){
+    try
+    {
+        pqxx::work txn(*dbConn.getConnection());
+        std::string queryPedidos = R"(
+            INSERT INTO public."Pedidos" ("id", "id_producto", "cantidad")
+            VALUES ($1, $2, $3);
+        )";
+        txn.exec_params(queryPedidos, pedidos.id, pedidos.id_producto, pedidos.cantidad);
+        txn.commit();
+    }
+    catch(const std::exception& e)
+    {
+        std::cerr << "Error al crear pedido: " << e.what() << std::endl;
+        throw;  // Lanza la excepción para que sea capturada por el controlador
+    }
+}
+
+int PedidosService::getLastId(){
+    try
+    {
+        pqxx::work txn(*dbConn.getConnection());
+        std::string query = R"(SELECT MAX(id) FROM public."Pedidos";)";
+        pqxx::result res = txn.exec(query);
+        return res[0]["max"].as<int>();
+    }
+    catch(const std::exception& e)
+    {
+        std::cerr << "Error al obtener último id de pedido: " << e.what() << std::endl;
+        throw;  // Lanza la excepción para que sea capturada por el controlador
+    }
+}
+
 std::vector<std::string> PedidosService::getColumns(){
     try
     {
         pqxx::work txn(*dbConn.getConnection());
-        std::string query = R"(SELECT 'id' AS column_name
+        std::string query = R"(
+        SELECT 'id' AS column_name
+            UNION
+            SELECT 'id_producto' AS column_name
             UNION
             SELECT '\"SKU\"' AS column_name
             UNION

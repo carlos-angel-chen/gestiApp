@@ -2,6 +2,7 @@
 
 Pedidos::Pedidos(
     int id,
+    int id_producto,
     const std::string& sku,
     const std::string& nombre,
     const std::string& tipo_producto,
@@ -15,6 +16,7 @@ Pedidos::Pedidos(
     float precio_venta_minimo
     // float subtotal
 ) : id(id), 
+    id_producto(id_producto),
     sku(sku), 
     nombre(nombre),
     tipo_producto(tipo_producto),
@@ -33,6 +35,7 @@ Pedidos::Pedidos(
 void to_json(nlohmann::json& j, const Pedidos& p) {
     j = nlohmann::json{
         {"id", p.id},
+        {"id_producto", p.id_producto},
         {"\"SKU\"", p.sku},
         {"nombre", p.nombre},
         {"tipo_producto", p.tipo_producto},
@@ -51,6 +54,7 @@ void to_json(nlohmann::json& j, const Pedidos& p) {
 // Implementación de la función from_json (opcional si quieres convertir de JSON a Producto)
 void from_json(const nlohmann::json& j, Pedidos& p) {
     j.at("id").get_to(p.id);
+    j.at("id_producto").get_to(p.id_producto);
     j.at("\"SKU\"").get_to(p.sku);
     j.at("nombre").get_to(p.nombre);
     j.at("tipo_producto").get_to(p.tipo_producto);

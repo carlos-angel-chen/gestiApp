@@ -4,6 +4,7 @@
 #include "../include/controllers/LogisticaController.h"
 #include "../include/controllers/MetodoPagosController.h"
 #include "../include/controllers/PedidosController.h"
+#include "../include/controllers/VentasController.h"
 
 void handleOptions(const Pistache::Rest::Request& request, Pistache::Http::ResponseWriter response) {
     response.headers()
@@ -20,6 +21,7 @@ void setupRoutes(Pistache::Rest::Router& router, DatabaseConnection& dbConn) {
     auto logisticaController = std::make_shared<LogisticaController>(dbConn);
     auto metodoPagosController = std::make_shared<MetodoPagosController>(dbConn);
     auto pedidosController = std::make_shared<PedidosController>(dbConn);
+    auto ventasController = std::make_shared<VentasController>(dbConn);
 
     using namespace Pistache::Rest;
 
@@ -79,6 +81,15 @@ void setupRoutes(Pistache::Rest::Router& router, DatabaseConnection& dbConn) {
     Routes::Get(router, "/pedidos", Routes::bind(&PedidosController::getAllPedidos, pedidosController));
     Routes::Get(router, "/pedidos/id/:id", Routes::bind(&PedidosController::getPedidoById, pedidosController));
     Routes::Get(router, "/pedidos/columns", Routes::bind(&PedidosController::getColumns, pedidosController));
+    Routes::Get(router, "/pedidos/last_id", Routes::bind(&PedidosController::getLastId, pedidosController));
+    Routes::Post(router, "/pedidos", Routes::bind(&PedidosController::createPedido, pedidosController));
+
+    Routes::Options(router, "/pedidos", Routes::bind(&handleOptions));
 
     // VENTAS
+    Routes::Get(router, "/ventas", Routes::bind(&VentasController::getAllVentas, ventasController));
+    Routes::Get(router, "/ventas/id/:id", Routes::bind(&VentasController::getVentaById, ventasController));
+    Routes::Post(router, "/ventas", Routes::bind(&VentasController::createVenta, ventasController));
+
+    Routes::Options(router, "/ventas", Routes::bind(&handleOptions));
 }

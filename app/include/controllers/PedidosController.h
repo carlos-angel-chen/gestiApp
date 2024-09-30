@@ -16,6 +16,8 @@ public:
     void getPedidoById(const Rest::Request& request, Http::ResponseWriter response);
     //void updatePedido(const Rest::Request& request, Http::ResponseWriter response);
     //void deletePedidoById(const Rest::Request& request, Http::ResponseWriter response);
+    void createPedido(const Rest::Request& request, Http::ResponseWriter response);
+    void getLastId(const Rest::Request& request, Http::ResponseWriter response);
     void getColumns(const Rest::Request& request, Http::ResponseWriter response);
 private:
     DatabaseConnection& dbConn;

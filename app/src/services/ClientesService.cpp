@@ -102,34 +102,37 @@ std::vector<Clientes> ClientesService::getClientsByRazonSocial(const std::string
     }
 }
 
-Clientes ClientesService::getClientByCuit(const std::string& cuit){
+std::vector<Clientes> ClientesService::getClientByCuit(const std::string& cuit){
     try
     {
         pqxx::work txn(*dbConn.getConnection());
-        pqxx::result res = txn.exec("SELECT * FROM public.\"Clientes\" WHERE \"CUIT\" = " + txn.quote(cuit));
+        std::string searchPattern = "%" + cuit + "%";
+        std::string query = R"(
+            SELECT *
+            FROM public."Clientes"
+            WHERE "CUIT" LIKE $1;)";
+        pqxx::result res = txn.exec_params(query, searchPattern);
 
-        if(res.size() != 1){
-            throw std::runtime_error("Cliente no encontrado");
+        std::vector<Clientes> clientes;
+        for (auto row : res){
+            Clientes c = {
+                row["id"].as<int>(),
+                row["razon_social"].as<std::string>(),
+                row["\"CUIT\""].as<std::string>(),
+                row["tributacion"].as<std::string>(),
+                row["telefono"].as<std::string>(),
+                row["email"].as<std::string>(),
+                row["nombre"].as<std::string>(),
+                row["direccion_fiscal"].as<std::string>(),
+                row["direccion_entrega"].as<std::string>(),
+                row["localidad"].as<std::string>(),
+                row["cp"].as<std::string>(),
+                row["whatsapp"].as<std::string>()
+            };
+            clientes.push_back(c);
         }
-
-        auto row = res[0];
-        Clientes c = {
-            row["id"].as<int>(),
-            row["razon_social"].as<std::string>(),
-            row["\"CUIT\""].as<std::string>(),
-            row["tributacion"].as<std::string>(),
-            row["telefono"].as<std::string>(),
-            row["email"].as<std::string>(),
-            row["nombre"].as<std::string>(),
-            row["direccion_fiscal"].as<std::string>(),
-            row["direccion_entrega"].as<std::string>(),
-            row["localidad"].as<std::string>(),
-            row["cp"].as<std::string>(),
-            row["whatsapp"].as<std::string>()
-        };
-
         txn.commit();
-        return c;
+        return clientes;
     }
     catch(const std::exception& e)
     {

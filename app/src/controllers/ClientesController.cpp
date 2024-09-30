@@ -79,8 +79,11 @@ void ClientesController::getClientsByRazonSocial(const Rest::Request& request, H
 void ClientesController::getClientByCuit(const Rest::Request& request, Http::ResponseWriter response) {
     auto cuit = request.param(":cuit").as<std::string>();
     try{
-        auto cliente = clientesService.getClientByCuit(cuit);
-        json jsonResponse = cliente;
+        auto clientes = clientesService.getClientByCuit(cuit);
+        json jsonResponse = json::array();
+        for (const auto& c : clientes){
+            jsonResponse.push_back(c);
+        }
         response.headers()
             .add<Http::Header::AccessControlAllowOrigin>("*")
             .add<Http::Header::AccessControlAllowMethods>("GET, POST, PUT, DELETE, OPTIONS")
@@ -88,7 +91,7 @@ void ClientesController::getClientByCuit(const Rest::Request& request, Http::Res
         response.send(Http::Code::Ok, jsonResponse.dump());
     }
     catch(const std::exception& e){
-        json errorResponse = {{"error", "Error al obtener cliente"}};
+        json errorResponse = {{"error", "Error al obtener clientes"}};
         response.headers()
             .add<Http::Header::AccessControlAllowOrigin>("*")
             .add<Http::Header::AccessControlAllowMethods>("GET, POST, PUT, DELETE, OPTIONS")

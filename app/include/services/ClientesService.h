@@ -13,7 +13,7 @@ public:
     std::vector<Clientes> getAllClients();
     std::vector<Clientes> getClientsByNombre(const std::string& nombre);
     std::vector<Clientes> getClientsByRazonSocial(const std::string& razonSocial);
-    Clientes getClientByCuit(const std::string& cuit);
+    std::vector<Clientes> getClientByCuit(const std::string& cuit);
     void createClient(const Clientes& clientes);
     Clientes updateClientById(const Clientes& clientes);
     void deleteClientById(int id);

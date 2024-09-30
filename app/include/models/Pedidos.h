@@ -7,6 +7,7 @@
 class Pedidos {
 public:
     int id;
+    int id_producto;
     std::string sku;
     std::string nombre;
     std::string tipo_producto;
@@ -24,6 +25,7 @@ public:
 
     Pedidos(
         int id,
+        int id_producto,
         const std::string& sku,
         const std::string& nombre,
         const std::string& tipo_producto,

@@ -12,8 +12,10 @@ public:
 
     std::vector<Pedidos> getAllPedidos();
     std::vector<Pedidos> getPedidoById(int id);
+    void createPedido(const Pedidos& pedidos);
     //Pedidos updatePedidoById(const Pedidos& pedidos);
     //void deletePedidoById(int id);
+    int getLastId();
     std::vector<std::string> getColumns();
 private:
     DatabaseConnection& dbConn;
