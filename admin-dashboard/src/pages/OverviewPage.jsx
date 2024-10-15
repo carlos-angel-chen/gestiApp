@@ -1,3 +1,4 @@
+import { useEffect, useState } from 'react';
 import { BarChart2, ShoppingBag, Zap, Users } from 'lucide-react'
 import Header from '../components/common/Header'
 import StatCard from '../components/common/StatCard'
@@ -6,6 +7,42 @@ import SalesOverviewChart from '../components/overview/SalesOverviewChart'
 import { motion } from 'framer-motion'
 
 const OverviewPage = () => {
+    const [totalSales, setTotalSales] = useState(0);
+    const [totalProducts, setTotalProducts] = useState(0);
+    const [totalClients, setTotalClients] = useState(0);
+    const [stockAlert, setStockAlert] = useState(0);
+
+    const fetchData = async () => {
+        try {
+            // Llamada para obtener total de ventas
+            const salesResponse = await fetch('http://localhost:9080/calculus/total_sales');
+            const salesData = await salesResponse.json();
+            setTotalSales(salesData.totalSales);
+
+            // Llamada para obtener total de productos
+            const productsResponse = await fetch('http://localhost:9080/calculus/total_products');
+            const productsData = await productsResponse.json();
+            setTotalProducts(productsData.totalProducts);
+
+            // Llamada para obtener total de clientes
+            const clientsResponse = await fetch('http://localhost:9080/calculus/total_clients');
+            const clientsData = await clientsResponse.json();
+            setTotalClients(clientsData.totalClients);
+
+            // Llamada para obtener alertas de stock
+            const stockResponse = await fetch('http://localhost:9080/calculus/stock_alert');
+            const stockData = await stockResponse.json();
+            setStockAlert(stockData.stockAlert);
+
+        } catch (error) {
+            console.error('Error fetching data:', error);
+        }
+    };
+
+    useEffect(() => {
+        fetchData();
+    }, []);
+
     return (
         <div className="flex-1 overflow-auto relative z-10">
             <Header title="Overview" />
@@ -18,10 +55,10 @@ const OverviewPage = () => {
                     animate={{ opacity: 1, y: 0 }}
                     transition={{ duration: 1 }}
                 >
-                    <StatCard name="Total Sales" icon={Zap} value="2,390" color="#6366F1" />
-                    <StatCard name="Total Products" icon={ShoppingBag} value="1,200" color="#EC4899" />
-                    <StatCard name="New Users" icon={Users} value="1,200" color="#8B5CF6" />
-                    <StatCard name="Convertion Rate" icon={BarChart2} value="12.5%" color="##10B981" />
+                    <StatCard name="Total Sales" icon={Zap} value={`$ ${totalSales.toFixed(2)}`} color="#6366F1" />
+                    <StatCard name="Total Products" icon={ShoppingBag} value={totalProducts} color="#EC4899" />
+                    <StatCard name="Total Clients" icon={Users} value={totalClients} color="#8B5CF6" />
+                    <StatCard name="Stock Alert" icon={BarChart2} value={`${stockAlert}`} color="##10B981" />
                     
                 </motion.div>
 

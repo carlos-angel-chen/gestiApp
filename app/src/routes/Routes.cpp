@@ -5,6 +5,7 @@
 #include "../include/controllers/MetodoPagosController.h"
 #include "../include/controllers/PedidosController.h"
 #include "../include/controllers/VentasController.h"
+#include "../include/controllers/CalculusController.h"
 
 void handleOptions(const Pistache::Rest::Request& request, Pistache::Http::ResponseWriter response) {
     response.headers()
@@ -22,6 +23,7 @@ void setupRoutes(Pistache::Rest::Router& router, DatabaseConnection& dbConn) {
     auto metodoPagosController = std::make_shared<MetodoPagosController>(dbConn);
     auto pedidosController = std::make_shared<PedidosController>(dbConn);
     auto ventasController = std::make_shared<VentasController>(dbConn);
+    auto calculusController = std::make_shared<CalculusController>(dbConn);
 
     using namespace Pistache::Rest;
 
@@ -92,4 +94,10 @@ void setupRoutes(Pistache::Rest::Router& router, DatabaseConnection& dbConn) {
     Routes::Post(router, "/ventas", Routes::bind(&VentasController::createVenta, ventasController));
 
     Routes::Options(router, "/ventas", Routes::bind(&handleOptions));
+
+    // CALCULUS
+    Routes::Get(router, "/calculus/total_sales", Routes::bind(&CalculusController::getTotalSales, calculusController));
+    Routes::Get(router, "/calculus/total_products", Routes::bind(&CalculusController::getTotalProducts, calculusController));
+    Routes::Get(router, "/calculus/total_clients", Routes::bind(&CalculusController::getTotalClients, calculusController));
+    Routes::Get(router, "/calculus/stock_alert", Routes::bind(&CalculusController::getStockAlert, calculusController));
 }
