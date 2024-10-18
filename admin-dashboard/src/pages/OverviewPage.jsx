@@ -3,6 +3,8 @@ import { BarChart2, ShoppingBag, Zap, Users } from 'lucide-react'
 import Header from '../components/common/Header'
 import StatCard from '../components/common/StatCard'
 import SalesOverviewChart from '../components/overview/SalesOverviewChart'
+import CategoryDistributionChart from '../components/overview/CategoryDistributionChart'
+import SalesChannelChart from '../components/overview/SalesChannelChart'
 
 import { motion } from 'framer-motion'
 
@@ -11,8 +13,9 @@ const OverviewPage = () => {
     const [totalProducts, setTotalProducts] = useState(0);
     const [totalClients, setTotalClients] = useState(0);
     const [stockAlert, setStockAlert] = useState(0);
+    const [salesData, setSalesData] = useState([]);
 
-    const fetchData = async () => {
+    const fetchDataSequentially = async () => {
         try {
             // Llamada para obtener total de ventas
             const salesResponse = await fetch('http://localhost:9080/calculus/total_sales');
@@ -34,13 +37,18 @@ const OverviewPage = () => {
             const stockData = await stockResponse.json();
             setStockAlert(stockData.stockAlert);
 
+            // Llamada para obtener datos de ventas
+            const monthlySalesResponse = await fetch('http://localhost:9080/calculus/monthly_sales');
+            const monthlySalesData = await monthlySalesResponse.json();
+            setSalesData(monthlySalesData);
+
         } catch (error) {
             console.error('Error fetching data:', error);
         }
     };
 
     useEffect(() => {
-        fetchData();
+        fetchDataSequentially();
     }, []);
 
     return (
@@ -64,7 +72,9 @@ const OverviewPage = () => {
 
                 {/* CHARTS */}
                 <div className='grid grid-col-1 lg:grid-col-2 gap-8'>
-                    <SalesOverviewChart />
+                    <SalesOverviewChart salesData={salesData}/>
+                    <CategoryDistributionChart />
+                    <SalesChannelChart />
                 </div>
             </main>
         </div>

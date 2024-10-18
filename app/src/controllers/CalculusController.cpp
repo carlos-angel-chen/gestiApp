@@ -84,3 +84,31 @@ void CalculusController::getStockAlert(const Rest::Request& request, Http::Respo
         response.send(Http::Code::Internal_Server_Error, errorResponse.dump());
     }
 }
+
+void CalculusController::getMonthlySales(const Rest::Request& request, Http::ResponseWriter response) {
+    try{
+        auto monthlySales = calculusService.getMonthlySales();
+        json jsonResponse = json::array();
+        for (const auto& ms : monthlySales){
+            // Crear un objeto JSON directamente a partir de los campos de ms
+            json saleData = {
+                {"month", ms.month},  // Si tienes getters, usa ms.getMonth()
+                {"total_por_mes", ms.total_por_mes}
+            };
+            jsonResponse.push_back(saleData); // Añadir el objeto JSON al array
+        }
+        response.headers()
+            .add<Http::Header::AccessControlAllowOrigin>("*")
+            .add<Http::Header::AccessControlAllowMethods>("GET, POST, PUT, DELETE, OPTIONS")
+            .add<Http::Header::AccessControlAllowHeaders>("Content-Type, Accept");
+        response.send(Http::Code::Ok, jsonResponse.dump());
+    } 
+    catch( const std::exception& e){
+        json errorResponse = {{"error", "Error al obtener las ventas mensuales"}};
+        response.headers()
+            .add<Http::Header::AccessControlAllowOrigin>("*")
+            .add<Http::Header::AccessControlAllowMethods>("GET, POST, PUT, DELETE, OPTIONS")
+            .add<Http::Header::AccessControlAllowHeaders>("Content-Type, Accept");
+        response.send(Http::Code::Internal_Server_Error, errorResponse.dump());
+    }
+}

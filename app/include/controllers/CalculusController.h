@@ -17,6 +17,7 @@ public:
     void getTotalProducts(const Rest::Request& request, Http::ResponseWriter response);
     void getTotalClients(const Rest::Request& request, Http::ResponseWriter response);
     void getStockAlert(const Rest::Request& request, Http::ResponseWriter response);
+    void getMonthlySales(const Rest::Request& request, Http::ResponseWriter response);
 
 private:
     DatabaseConnection& dbConn;

@@ -100,4 +100,5 @@ void setupRoutes(Pistache::Rest::Router& router, DatabaseConnection& dbConn) {
     Routes::Get(router, "/calculus/total_products", Routes::bind(&CalculusController::getTotalProducts, calculusController));
     Routes::Get(router, "/calculus/total_clients", Routes::bind(&CalculusController::getTotalClients, calculusController));
     Routes::Get(router, "/calculus/stock_alert", Routes::bind(&CalculusController::getStockAlert, calculusController));
+    Routes::Get(router, "/calculus/monthly_sales", Routes::bind(&CalculusController::getMonthlySales, calculusController));
 }
