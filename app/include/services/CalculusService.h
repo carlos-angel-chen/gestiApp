@@ -19,9 +19,19 @@ public:
         std::string month;
         double total_por_mes;
     };
-    
     std::vector<MonthlySales> getMonthlySales();
 
+    struct CategorySales{
+        std::string category;
+        int total;
+    };
+    std::vector<CategorySales> getCategorySales();
+
+    struct PaymentMethodSales{
+        std::string method;
+        int total;
+    };
+    std::vector<PaymentMethodSales> getPaymentMethodSales();
 private:
     DatabaseConnection& dbConn;
 };

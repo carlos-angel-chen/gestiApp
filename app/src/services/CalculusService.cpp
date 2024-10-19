@@ -113,3 +113,77 @@ std::vector<CalculusService::MonthlySales> CalculusService::getMonthlySales(){
         throw;
     }
 }
+
+std::vector<CalculusService::CategorySales> CalculusService::getCategorySales(){
+    try
+    {
+        pqxx::work txn(*dbConn.getConnection());
+        std::string query = R"(
+            SELECT 
+                tipo.nombre,
+                COUNT(pedido.id) AS total
+            FROM
+                public."Productos" producto
+            LEFT JOIN 
+                public."Pedidos" pedido
+            ON
+                pedido.id_producto = producto.id
+            LEFT JOIN
+                public."TipoProductos" tipo
+            ON
+                producto.id_tipo = tipo.id
+            GROUP BY tipo.nombre;
+                    )";
+        pqxx::result res = txn.exec(query);
+
+        std::vector<CategorySales> categorySales;
+        for (auto row : res){
+            CategorySales cs;
+            cs.category = row[0].as<std::string>();
+            cs.total = row[1].as<int>();
+            categorySales.push_back(cs);
+        }
+        txn.commit();
+        return categorySales;
+    }
+    catch(const std::exception& e)
+    {
+        std::cerr << "Error al obtener el total de productos por categoria: " << e.what() << std::endl;
+        throw;
+    }
+}
+
+std::vector<CalculusService::PaymentMethodSales> CalculusService::getPaymentMethodSales(){
+    try
+    {
+        pqxx::work txn(*dbConn.getConnection());
+        std::string query = R"(
+            SELECT
+                metodo.nombre AS method,
+                COUNT(venta.id) AS total
+            FROM
+                public."Ventas" venta
+            LEFT JOIN
+                public."MetodoPagos" metodo
+            ON
+                venta.id_metodo_pago = metodo.id
+            GROUP BY metodo.nombre;
+                    )";
+        pqxx::result res = txn.exec(query);
+
+        std::vector<PaymentMethodSales> paymentMethodSales;
+        for (auto row : res){
+            PaymentMethodSales pms;
+            pms.method = row[0].as<std::string>();
+            pms.total = row[1].as<int>();
+            paymentMethodSales.push_back(pms);
+        }
+        txn.commit();
+        return paymentMethodSales;
+    }
+    catch(const std::exception& e)
+    {
+        std::cerr << "Error al obtener el total de ventas por método de pago: " << e.what() << std::endl;
+        throw;
+    }
+}

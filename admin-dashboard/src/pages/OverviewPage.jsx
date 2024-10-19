@@ -4,7 +4,7 @@ import Header from '../components/common/Header'
 import StatCard from '../components/common/StatCard'
 import SalesOverviewChart from '../components/overview/SalesOverviewChart'
 import CategoryDistributionChart from '../components/overview/CategoryDistributionChart'
-import SalesChannelChart from '../components/overview/SalesChannelChart'
+import PaymentMethodChart from '../components/overview/PaymentMethodChart'
 
 import { motion } from 'framer-motion'
 
@@ -14,6 +14,8 @@ const OverviewPage = () => {
     const [totalClients, setTotalClients] = useState(0);
     const [stockAlert, setStockAlert] = useState(0);
     const [salesData, setSalesData] = useState([]);
+    const [categoryData, setCategoryData] = useState([]);
+    const [paymentData, setPaymentData] = useState([]);
 
     const fetchDataSequentially = async () => {
         try {
@@ -42,6 +44,16 @@ const OverviewPage = () => {
             const monthlySalesData = await monthlySalesResponse.json();
             setSalesData(monthlySalesData);
 
+            // Llamada para obtener datos de categorias
+            const categoryResponse = await fetch('http://localhost:9080/calculus/category_sales');
+            const categoryData = await categoryResponse.json();
+            setCategoryData(categoryData);
+
+            // Llamada para obtener datos de metodos de pago
+            const paymentResponse = await fetch('http://localhost:9080/calculus/payment_method_sales');
+            const paymentData = await paymentResponse.json();
+            setPaymentData(paymentData);
+
         } catch (error) {
             console.error('Error fetching data:', error);
         }
@@ -66,15 +78,15 @@ const OverviewPage = () => {
                     <StatCard name="Total Sales" icon={Zap} value={`$ ${totalSales.toFixed(2)}`} color="#6366F1" />
                     <StatCard name="Total Products" icon={ShoppingBag} value={totalProducts} color="#EC4899" />
                     <StatCard name="Total Clients" icon={Users} value={totalClients} color="#8B5CF6" />
-                    <StatCard name="Stock Alert" icon={BarChart2} value={`${stockAlert}`} color="##10B981" />
+                    <StatCard name="Stock Alert" icon={BarChart2} value={`${stockAlert}`} color="#10B981" />
                     
                 </motion.div>
 
                 {/* CHARTS */}
                 <div className='grid grid-col-1 lg:grid-col-2 gap-8'>
                     <SalesOverviewChart salesData={salesData}/>
-                    <CategoryDistributionChart />
-                    <SalesChannelChart />
+                    <CategoryDistributionChart categoryData={categoryData}/>
+                    <PaymentMethodChart paymentData={paymentData}/>
                 </div>
             </main>
         </div>

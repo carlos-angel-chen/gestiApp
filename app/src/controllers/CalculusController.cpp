@@ -112,3 +112,59 @@ void CalculusController::getMonthlySales(const Rest::Request& request, Http::Res
         response.send(Http::Code::Internal_Server_Error, errorResponse.dump());
     }
 }
+
+void CalculusController::getCategorySales(const Rest::Request& request, Http::ResponseWriter response) {
+    try{
+        auto categorySales = calculusService.getCategorySales();
+        json jsonResponse = json::array();
+        for (const auto& cs : categorySales){
+            // Crear un objeto JSON directamente a partir de los campos de cs
+            json categoryData = {
+                {"category", cs.category},  // Si tienes getters, usa cs.getCategory()
+                {"total", cs.total}
+            };
+            jsonResponse.push_back(categoryData); // Añadir el objeto JSON al array
+        }
+        response.headers()
+            .add<Http::Header::AccessControlAllowOrigin>("*")
+            .add<Http::Header::AccessControlAllowMethods>("GET, POST, PUT, DELETE, OPTIONS")
+            .add<Http::Header::AccessControlAllowHeaders>("Content-Type, Accept");
+        response.send(Http::Code::Ok, jsonResponse.dump());
+    } 
+    catch( const std::exception& e){
+        json errorResponse = {{"error", "Error al obtener las ventas por categoría"}};
+        response.headers()
+            .add<Http::Header::AccessControlAllowOrigin>("*")
+            .add<Http::Header::AccessControlAllowMethods>("GET, POST, PUT, DELETE, OPTIONS")
+            .add<Http::Header::AccessControlAllowHeaders>("Content-Type, Accept");
+        response.send(Http::Code::Internal_Server_Error, errorResponse.dump());
+    }
+}
+
+void CalculusController::getPaymentMethodSales(const Rest::Request& request, Http::ResponseWriter response) {
+    try{
+        auto paymentMethodSales = calculusService.getPaymentMethodSales();
+        json jsonResponse = json::array();
+        for (const auto& pms : paymentMethodSales){
+            // Crear un objeto JSON directamente a partir de los campos de pms
+            json paymentData = {
+                {"method", pms.method},  // Si tienes getters, usa pms.getMethod()
+                {"total", pms.total}
+            };
+            jsonResponse.push_back(paymentData); // Añadir el objeto JSON al array
+        }
+        response.headers()
+            .add<Http::Header::AccessControlAllowOrigin>("*")
+            .add<Http::Header::AccessControlAllowMethods>("GET, POST, PUT, DELETE, OPTIONS")
+            .add<Http::Header::AccessControlAllowHeaders>("Content-Type, Accept");
+        response.send(Http::Code::Ok, jsonResponse.dump());
+    } 
+    catch( const std::exception& e){
+        json errorResponse = {{"error", "Error al obtener las ventas por método de pago"}};
+        response.headers()
+            .add<Http::Header::AccessControlAllowOrigin>("*")
+            .add<Http::Header::AccessControlAllowMethods>("GET, POST, PUT, DELETE, OPTIONS")
+            .add<Http::Header::AccessControlAllowHeaders>("Content-Type, Accept");
+        response.send(Http::Code::Internal_Server_Error, errorResponse.dump());
+    }
+}
