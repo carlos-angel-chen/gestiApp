@@ -9,7 +9,7 @@ std::vector<Productos> ProductosService::getAllProducts() {
         pqxx::work txn(*dbConn.getConnection());
         std::string query = R"(SELECT
                 producto.id,
-                producto."SKU",
+                producto.sku,
                 producto.nombre,
                 tipo.nombre AS tipo_producto,
                 producto.stock_minimo,
@@ -39,7 +39,7 @@ std::vector<Productos> ProductosService::getAllProducts() {
         for (auto row : res) {
             Productos p = {
                 row["id"].as<int>(),
-                row["\"SKU\""].as<std::string>(),
+                row["sku"].as<std::string>(),
                 row["nombre"].as<std::string>(),
                 row["tipo_producto"].as<std::string>(),
                 row["stock_minimo"].as<int>(),
@@ -68,7 +68,7 @@ Productos ProductosService::getProductById(int id) {
         std::string query = R"(
             SELECT 
                 producto.id, 
-                producto."SKU", 
+                producto.sku, 
                 producto.nombre, 
                 tipo.nombre AS tipo_producto, 
                 producto.stock_minimo, 
@@ -96,7 +96,7 @@ Productos ProductosService::getProductById(int id) {
         auto row = res[0];
         Productos p = {
             row["id"].as<int>(),
-            row["\"SKU\""].as<std::string>(),
+            row["sku"].as<std::string>(),
             row["nombre"].as<std::string>(),
             row["tipo_producto"].as<std::string>(),
             row["stock_minimo"].as<int>(),
@@ -125,7 +125,7 @@ std::vector<Productos> ProductosService::getProductBySKU(const std::string& sku)
         std::string searchPattern = "%" + sku + "%";
         std::string query = R"(SELECT
                 producto.id,
-                producto."SKU",
+                producto.sku,
                 producto.nombre,
                 tipo.nombre AS tipo_producto,
                 producto.stock_minimo,
@@ -156,7 +156,7 @@ std::vector<Productos> ProductosService::getProductBySKU(const std::string& sku)
         for (auto row : res){
             Productos p = {
                 row["id"].as<int>(),
-                row["\"SKU\""].as<std::string>(),
+                row["sku"].as<std::string>(),
                 row["nombre"].as<std::string>(),
                 row["tipo_producto"].as<std::string>(),
                 row["stock_minimo"].as<int>(),
@@ -191,7 +191,7 @@ void ProductosService::createProduct(const Productos& productos) {
             id_tipo = 2;
         }
         std::string queryProducto = R"(INSERT INTO public."Productos"
-                ("SKU", "nombre", "id_tipo", "stock_minimo", "stock_actual")
+                ("sku", "nombre", "id_tipo", "stock_minimo", "stock_actual")
                 VALUES
                 ($1, $2, $3, $4, $5);)";
         txn.exec_params(queryProducto, productos.sku, productos.nombre, id_tipo, productos.stock_minimo, productos.stock_actual);
@@ -221,7 +221,7 @@ Productos ProductosService::updateProductById(const Productos& productos){
             id_tipo = 2;
         }
         std::string queryProducto = R"(UPDATE public."Productos" SET
-                "SKU" = $1,
+                "sku" = $1,
                 "nombre" = $2,
                 "id_tipo" = $3,
                 "stock_minimo" = $4,
@@ -274,7 +274,7 @@ std::vector<std::string> ProductosService::getColumns() {
         pqxx::work txn(*dbConn.getConnection());
         std::string query = R"(SELECT 'id' AS column_name
             UNION ALL
-            SELECT 'SKU' AS column_name
+            SELECT 'sku' AS column_name
             UNION ALL
             SELECT 'nombre' AS column_name
             UNION ALL
