@@ -106,7 +106,7 @@ void ClientesController::createClient(const Rest::Request& request, Http::Respon
         Clientes cliente = {
             0,
             jsonBody["razon_social"].get<std::string>(),
-            jsonBody["CUIT"].get<std::string>(),
+            jsonBody["cuit"].get<std::string>(),
             jsonBody["tributacion"].get<std::string>(),
             jsonBody["telefono"].get<std::string>(),
             jsonBody["email"].get<std::string>(),
@@ -141,7 +141,7 @@ void ClientesController::updateClientById(const Rest::Request& request, Http::Re
         Clientes cliente = {
             request.param(":id").as<int>(),
             jsonBody["razon_social"].get<std::string>(),
-            jsonBody["CUIT"].get<std::string>(),
+            jsonBody["cuit"].get<std::string>(),
             jsonBody["tributacion"].get<std::string>(),
             jsonBody["telefono"].get<std::string>(),
             jsonBody["email"].get<std::string>(),

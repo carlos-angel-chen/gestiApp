@@ -14,7 +14,7 @@ std::vector<Clientes> ClientesService::getAllClients() {
             Clientes c = {
                 row["id"].as<int>(),
                 row["razon_social"].as<std::string>(),
-                row["\"CUIT\""].as<std::string>(),
+                row["cuit"].as<std::string>(),
                 row["tributacion"].as<std::string>(),
                 row["telefono"].as<std::string>(),
                 row["email"].as<std::string>(),
@@ -47,7 +47,7 @@ std::vector<Clientes> ClientesService::getClientsByNombre(const std::string& nom
             Clientes c = {
                 row["id"].as<int>(),
                 row["razon_social"].as<std::string>(),
-                row["\"CUIT\""].as<std::string>(),
+                row["cuit"].as<std::string>(),
                 row["tributacion"].as<std::string>(),
                 row["telefono"].as<std::string>(),
                 row["email"].as<std::string>(),
@@ -80,7 +80,7 @@ std::vector<Clientes> ClientesService::getClientsByRazonSocial(const std::string
             Clientes c = {
                 row["id"].as<int>(),
                 row["razon_social"].as<std::string>(),
-                row["\"CUIT\""].as<std::string>(),
+                row["cuit"].as<std::string>(),
                 row["tributacion"].as<std::string>(),
                 row["telefono"].as<std::string>(),
                 row["email"].as<std::string>(),
@@ -110,7 +110,7 @@ std::vector<Clientes> ClientesService::getClientByCuit(const std::string& cuit){
         std::string query = R"(
             SELECT *
             FROM public."Clientes"
-            WHERE "CUIT" LIKE $1;)";
+            WHERE cuit LIKE $1;)";
         pqxx::result res = txn.exec_params(query, searchPattern);
 
         std::vector<Clientes> clientes;
@@ -118,7 +118,7 @@ std::vector<Clientes> ClientesService::getClientByCuit(const std::string& cuit){
             Clientes c = {
                 row["id"].as<int>(),
                 row["razon_social"].as<std::string>(),
-                row["\"CUIT\""].as<std::string>(),
+                row["cuit"].as<std::string>(),
                 row["tributacion"].as<std::string>(),
                 row["telefono"].as<std::string>(),
                 row["email"].as<std::string>(),
@@ -147,7 +147,7 @@ void ClientesService::createClient(const Clientes& cliente){
         pqxx::work txn(*dbConn.getConnection());
 
         std::string query = R"(INSERT INTO public."Clientes" 
-            (razon_social, "CUIT", tributacion, telefono, email, nombre, "direccion_fiscal", "direccion_entrega", localidad, cp, whatsapp) 
+            (razon_social, cuit, tributacion, telefono, email, nombre, "direccion_fiscal", "direccion_entrega", localidad, cp, whatsapp) 
             VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11))";
 
         // Ejecutar la consulta usando placeholders para evitar errores de formato
@@ -177,7 +177,7 @@ Clientes ClientesService::updateClientById(const Clientes& cliente){
     {
         pqxx::work txn(*dbConn.getConnection());
 
-        std::string query = "UPDATE public.\"Clientes\" SET razon_social = " + txn.quote(cliente.razonSocial) + ", \"CUIT\" = " + txn.quote(cliente.cuit) + ", tributacion = " + txn.quote(cliente.tributacion) + ", telefono = " + txn.quote(cliente.telefono) + ", email = " + txn.quote(cliente.email) + ", nombre = " + txn.quote(cliente.nombre) + ", direccion_fiscal = " + txn.quote(cliente.direccionFiscal) + ", direccion_entrega = " + txn.quote(cliente.direccionEntrega) + ", localidad = " + txn.quote(cliente.localidad) + ", cp = " + txn.quote(cliente.cp) + ", whatsapp = " + txn.quote(cliente.whatsapp) + " WHERE id = " + txn.quote(cliente.id);
+        std::string query = "UPDATE public.\"Clientes\" SET razon_social = " + txn.quote(cliente.razonSocial) + ", cuit = " + txn.quote(cliente.cuit) + ", tributacion = " + txn.quote(cliente.tributacion) + ", telefono = " + txn.quote(cliente.telefono) + ", email = " + txn.quote(cliente.email) + ", nombre = " + txn.quote(cliente.nombre) + ", direccion_fiscal = " + txn.quote(cliente.direccionFiscal) + ", direccion_entrega = " + txn.quote(cliente.direccionEntrega) + ", localidad = " + txn.quote(cliente.localidad) + ", cp = " + txn.quote(cliente.cp) + ", whatsapp = " + txn.quote(cliente.whatsapp) + " WHERE id = " + txn.quote(cliente.id);
 
         txn.exec(query);
         txn.commit();
