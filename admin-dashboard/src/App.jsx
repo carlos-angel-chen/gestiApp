@@ -1,11 +1,12 @@
 import { Route, Routes, useLocation } from "react-router-dom"
 import OverviewPage from "./pages/OverviewPage"
 import ProductsPage from "./pages/ProductsPage"
-import Sidebar from "./components/Sidebar"
+import Sidebar from "./components/common/Sidebar"
 import ClientsPage from "./pages/ClientsPage"
 import AddClientForm from "./components/clients/AddClientForm"
 import SalesPage from "./pages/SalesPage"
 import AddSaleForm from "./components/sales/AddSaleForm"
+import OrdersPage from "./pages/OrdersPage"
 
 function App() {
   const location = useLocation();
@@ -31,6 +32,7 @@ function App() {
         <Route path="/agregar-cliente" element={<AddClientForm />} />
         <Route path="/sales" element={<SalesPage />} />
         <Route path="/nueva-venta" element={<AddSaleForm />} />
+        <Route path="/orders" element={<OrdersPage />} />
       </Routes>
     </div>
   )
