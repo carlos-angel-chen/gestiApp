@@ -168,3 +168,23 @@ void CalculusController::getPaymentMethodSales(const Rest::Request& request, Htt
         response.send(Http::Code::Internal_Server_Error, errorResponse.dump());
     }
 }
+
+void CalculusController::getMaxPedidoId(const Rest::Request& request, Http::ResponseWriter response) {
+    try{
+        auto maxId = calculusService.getMaxPedidoId();
+        json jsonResponse = {{"maxPedidoId", maxId}};
+        response.headers()
+            .add<Http::Header::AccessControlAllowOrigin>("*")
+            .add<Http::Header::AccessControlAllowMethods>("GET, POST, PUT, DELETE, OPTIONS")
+            .add<Http::Header::AccessControlAllowHeaders>("Content-Type, Accept");
+        response.send(Http::Code::Ok, jsonResponse.dump());
+    } 
+    catch( const std::exception& e){
+        json errorResponse = {{"error", "Error al obtener el id del último pedido"}};
+        response.headers()
+            .add<Http::Header::AccessControlAllowOrigin>("*")
+            .add<Http::Header::AccessControlAllowMethods>("GET, POST, PUT, DELETE, OPTIONS")
+            .add<Http::Header::AccessControlAllowHeaders>("Content-Type, Accept");
+        response.send(Http::Code::Internal_Server_Error, errorResponse.dump());
+    }
+}

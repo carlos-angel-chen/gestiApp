@@ -81,7 +81,7 @@ void ProductosController::createProduct(const Rest::Request& request, Http::Resp
         auto jsonBody = json::parse(request.body());
         Productos producto = {
             0,
-            jsonBody["SKU"].get<std::string>(),
+            jsonBody["sku"].get<std::string>(),
             jsonBody["nombre"].get<std::string>(),
             jsonBody["tipo_producto"].get<std::string>(),
             jsonBody["stock_minimo"].get<int>(),
@@ -117,7 +117,7 @@ void ProductosController::updateProduct(const Rest::Request& request, Http::Resp
         auto jsonBody = json::parse(request.body());
         Productos producto = {
             request.param(":id").as<int>(),
-            jsonBody["SKU"].get<std::string>(),
+            jsonBody["sku"].get<std::string>(),
             jsonBody["nombre"].get<std::string>(),
             jsonBody["tipo_producto"].get<std::string>(),
             jsonBody["stock_minimo"].get<int>(),

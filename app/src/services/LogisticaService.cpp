@@ -13,7 +13,7 @@ std::vector<Logistica> LogisticaService::getAllLogisticas(){
             Logistica l = {
                 row["id"].as<int>(),
                 row["razon_social"].as<std::string>(),
-                row["\"CUIT\""].as<std::string>(),
+                row["cuit"].as<std::string>(),
                 row["direccion"].as<std::string>(),
                 row["tipo"].as<std::string>(),
                 row["nombre"].as<std::string>(),
@@ -41,7 +41,7 @@ std::vector<Logistica> LogisticaService::getLogisticasByRazonSocial(const std::s
             Logistica l = {
                 row["id"].as<int>(),
                 row["razon_social"].as<std::string>(),
-                row["\"CUIT\""].as<std::string>(),
+                row["cuit"].as<std::string>(),
                 row["direccion"].as<std::string>(),
                 row["tipo"].as<std::string>(),
                 row["nombre"].as<std::string>(),
@@ -70,7 +70,7 @@ std::vector<Logistica> LogisticaService::getLogisticasByNombre(const std::string
             Logistica l = {
                 row["id"].as<int>(),
                 row["razon_social"].as<std::string>(),
-                row["\"CUIT\""].as<std::string>(),
+                row["cuit"].as<std::string>(),
                 row["direccion"].as<std::string>(),
                 row["tipo"].as<std::string>(),
                 row["nombre"].as<std::string>(),
@@ -92,7 +92,7 @@ Logistica LogisticaService::getLogisticaByCuit(const std::string& cuit){
     try
     {
         pqxx::work txn(*dbConn.getConnection());
-        pqxx::result res = txn.exec("SELECT * FROM public.\"Logistica\" WHERE \"CUIT\" = " + txn.quote(cuit));
+        pqxx::result res = txn.exec("SELECT * FROM public.\"Logistica\" WHERE cuit = " + txn.quote(cuit));
 
         if(res.size() != 1){
             throw std::runtime_error("Logistica no encontrada");
@@ -102,7 +102,7 @@ Logistica LogisticaService::getLogisticaByCuit(const std::string& cuit){
         Logistica l = {
             row["id"].as<int>(),
             row["razon_social"].as<std::string>(),
-            row["\"CUIT\""].as<std::string>(),
+            row["cuit"].as<std::string>(),
             row["direccion"].as<std::string>(),
             row["tipo"].as<std::string>(),
             row["nombre"].as<std::string>(),
@@ -123,7 +123,7 @@ void LogisticaService::createLogistica(const Logistica& logistica){
     {
         pqxx::work txn(*dbConn.getConnection());
         std::string query = R"(INSERT INTO public."Logistica"
-            (razon_social, "CUIT", direccion, tipo, nombre, localidad, telefono)
+            (razon_social, cuit, direccion, tipo, nombre, localidad, telefono)
             VALUES ($1, $2, $3, $4, $5, $6, $7))";
 
         txn.exec_params(query, 
@@ -149,7 +149,7 @@ Logistica LogisticaService::updateLogisticaById(const Logistica& logistica){
         pqxx::work txn(*dbConn.getConnection());
         std::string query = R"(UPDATE public."Logistica" SET
             razon_social = $1,
-            "CUIT" = $2,
+            cuit = $2,
             direccion = $3,
             tipo = $4,
             nombre = $5,

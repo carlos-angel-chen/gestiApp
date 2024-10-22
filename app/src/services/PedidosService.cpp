@@ -10,7 +10,7 @@ std::vector<Pedidos> PedidosService::getAllPedidos(){
         std::string query = R"(SELECT
                 pedido.id,
                 producto.id AS id_producto,
-                producto."SKU",
+                producto.sku,
                 producto.nombre AS nombre,
                 tipo.nombre AS tipo_producto,
                 pedido.cantidad,
@@ -44,7 +44,7 @@ std::vector<Pedidos> PedidosService::getAllPedidos(){
             Pedidos p = {
                 row["id"].as<int>(),
                 row["id_producto"].as<int>(),
-                row["\"SKU\""].as<std::string>(),
+                row["sku"].as<std::string>(),
                 row["nombre"].as<std::string>(),
                 row["tipo_producto"].as<std::string>(),
                 row["cantidad"].as<int>(),
@@ -75,7 +75,7 @@ std::vector<Pedidos> PedidosService::getPedidoById(int id){
         std::string query = R"(SELECT
                 pedido.id,
                 producto.id AS id_producto,
-                producto."SKU",
+                producto.sku,
                 producto.nombre AS nombre,
                 tipo.nombre AS tipo_producto,
                 pedido.cantidad,
@@ -110,7 +110,7 @@ std::vector<Pedidos> PedidosService::getPedidoById(int id){
             Pedidos p = {
                 row["id"].as<int>(),
                 row["id_producto"].as<int>(),
-                row["\"SKU\""].as<std::string>(),
+                row["sku"].as<std::string>(),
                 row["nombre"].as<std::string>(),
                 row["tipo_producto"].as<std::string>(),
                 row["cantidad"].as<int>(),

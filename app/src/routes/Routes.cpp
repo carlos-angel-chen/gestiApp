@@ -103,4 +103,5 @@ void setupRoutes(Pistache::Rest::Router& router, DatabaseConnection& dbConn) {
     Routes::Get(router, "/calculus/monthly_sales", Routes::bind(&CalculusController::getMonthlySales, calculusController));
     Routes::Get(router, "/calculus/category_sales", Routes::bind(&CalculusController::getCategorySales, calculusController));
     Routes::Get(router, "/calculus/payment_method_sales", Routes::bind(&CalculusController::getPaymentMethodSales, calculusController));
+    Routes::Get(router, "/calculus/max_pedido_id", Routes::bind(&CalculusController::getMaxPedidoId, calculusController));
 }

@@ -14,6 +14,7 @@ public:
     int getTotalProducts();
     int getTotalClients();
     int getStockAlert();
+    int getMaxPedidoId();
     
     struct MonthlySales {
         std::string month;
@@ -32,6 +33,8 @@ public:
         int total;
     };
     std::vector<PaymentMethodSales> getPaymentMethodSales();
+
+
 private:
     DatabaseConnection& dbConn;
 };

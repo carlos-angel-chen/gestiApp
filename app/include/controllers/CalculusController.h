@@ -20,6 +20,7 @@ public:
     void getMonthlySales(const Rest::Request& request, Http::ResponseWriter response);
     void getCategorySales(const Rest::Request& request, Http::ResponseWriter response);
     void getPaymentMethodSales(const Rest::Request& request, Http::ResponseWriter response);
+    void getMaxPedidoId(const Rest::Request& request, Http::ResponseWriter response);
 
 private:
     DatabaseConnection& dbConn;

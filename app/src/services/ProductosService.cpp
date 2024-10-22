@@ -147,7 +147,7 @@ std::vector<Productos> ProductosService::getProductBySKU(const std::string& sku)
                 public."TipoProductos" tipo
             ON
                 producto.id_tipo = tipo.id
-            WHERE producto."SKU" LIKE $1;
+            WHERE producto.sku LIKE $1;
         )";
         pqxx::result res = txn.exec_params(query, searchPattern);
         //pqxx::result res = txn.exec("SELECT * FROM public.\"Productos\" WHERE \"SKU\" = " + txn.quote(sku));

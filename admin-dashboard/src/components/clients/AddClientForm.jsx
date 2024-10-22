@@ -1,6 +1,5 @@
 import { useState } from 'react'
-import { useNavigate } from 'react-router-dom'; // Hook para redirección
-
+import { useNavigate } from 'react-router-dom';
 const AddClientForm = () => {
     const [formData, setFormData] = useState({
         nombre: '',

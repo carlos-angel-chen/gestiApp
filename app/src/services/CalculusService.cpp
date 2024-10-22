@@ -187,3 +187,23 @@ std::vector<CalculusService::PaymentMethodSales> CalculusService::getPaymentMeth
         throw;
     }
 }
+
+int CalculusService::getMaxPedidoId(){
+    try
+    {
+        pqxx::work txn(*dbConn.getConnection());
+        pqxx::result res = txn.exec("SELECT MAX(id) FROM public.\"Pedidos\"");
+
+        int maxId = 0;
+        if (!res.empty()) {
+            maxId = res[0][0].as<int>(0);
+        }
+        txn.commit();
+        return maxId;
+    }
+    catch(const std::exception& e)
+    {
+        std::cerr << "Error al obtener el id máximo de pedidos: " << e.what() << std::endl;
+        throw;
+    }
+}

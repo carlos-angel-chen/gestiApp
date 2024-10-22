@@ -5,6 +5,7 @@ import Sidebar from "./components/Sidebar"
 import ClientsPage from "./pages/ClientsPage"
 import AddClientForm from "./components/clients/AddClientForm"
 import SalesPage from "./pages/SalesPage"
+import AddSaleForm from "./components/sales/AddSaleForm"
 
 function App() {
   const location = useLocation();
@@ -29,6 +30,7 @@ function App() {
         <Route path='/clients' element={<ClientsPage />} />
         <Route path="/agregar-cliente" element={<AddClientForm />} />
         <Route path="/sales" element={<SalesPage />} />
+        <Route path="/nueva-venta" element={<AddSaleForm />} />
       </Routes>
     </div>
   )
