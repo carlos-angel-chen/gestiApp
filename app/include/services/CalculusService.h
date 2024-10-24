@@ -15,6 +15,9 @@ public:
     int getTotalClients();
     int getStockAlert();
     int getMaxPedidoId();
+    int getTotalPedidos();
+    float getAvgPrecioFinalPesos();
+    float getAvgPrecioFinalUsd();
     
     struct MonthlySales {
         std::string month;

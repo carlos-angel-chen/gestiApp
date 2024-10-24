@@ -207,3 +207,63 @@ int CalculusService::getMaxPedidoId(){
         throw;
     }
 }
+
+int CalculusService::getTotalPedidos(){
+    try
+    {
+        pqxx::work txn(*dbConn.getConnection());
+        pqxx::result res = txn.exec("SELECT COUNT(DISTINCT(id)) FROM public.\"Pedidos\"");
+
+        int total = 0;
+        if (!res.empty()) {
+            total = res[0][0].as<int>(0);
+        }
+        txn.commit();
+        return total;
+    }
+    catch(const std::exception& e)
+    {
+        std::cerr << "Error al obtener el total de pedidos: " << e.what() << std::endl;
+        throw;
+    }   
+}
+
+float CalculusService::getAvgPrecioFinalPesos(){
+    try
+    {
+        pqxx::work txn(*dbConn.getConnection());
+        pqxx::result res = txn.exec("SELECT AVG(precio_final_pesos) AS promedio_precio_final_pesos FROM public.\"Ventas\";");
+
+        float avg = 0;
+        if (!res.empty()) {
+            avg = res[0][0].as<float>(0);
+        }
+        txn.commit();
+        return avg;
+    }
+    catch(const std::exception& e)
+    {
+        std::cerr << "Error al obtener el promedio de precio final en pesos: " << e.what() << std::endl;
+        throw;
+    }
+}
+
+float CalculusService::getAvgPrecioFinalUsd(){
+    try
+    {
+        pqxx::work txn(*dbConn.getConnection());
+        pqxx::result res = txn.exec("SELECT AVG(precio_final_usd) AS promedio_precio_final_usd FROM public.\"Ventas\";");
+
+        float avg = 0;
+        if (!res.empty()) {
+            avg = res[0][0].as<float>(0);
+        }
+        txn.commit();
+        return avg;
+    }
+    catch(const std::exception& e)
+    {
+        std::cerr << "Error al obtener el promedio de precio final en dólares: " << e.what() << std::endl;
+        throw;
+    }
+}

@@ -7,7 +7,8 @@ std::vector<Pedidos> PedidosService::getAllPedidos(){
     try
     {
         pqxx::work txn(*dbConn.getConnection());
-        std::string query = R"(SELECT
+        std::string query = R"(
+            SELECT
                 pedido.id,
                 producto.id AS id_producto,
                 producto.sku,
@@ -35,7 +36,9 @@ std::vector<Pedidos> PedidosService::getAllPedidos(){
             LEFT JOIN
                 public."Precios" precio
             ON
-                producto.id = precio.id_producto;)";
+                producto.id = precio.id_producto
+            ORDER BY pedido.id ASC;
+                )";
 
         pqxx::result res = txn.exec_params(query);
 

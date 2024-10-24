@@ -21,6 +21,9 @@ public:
     void getCategorySales(const Rest::Request& request, Http::ResponseWriter response);
     void getPaymentMethodSales(const Rest::Request& request, Http::ResponseWriter response);
     void getMaxPedidoId(const Rest::Request& request, Http::ResponseWriter response);
+    void getTotalPedidos(const Rest::Request& request, Http::ResponseWriter response);
+    void getAvgPrecioFinalPesos(const Rest::Request& request, Http::ResponseWriter response);
+    void getAvgPrecioFinalUsd(const Rest::Request& request, Http::ResponseWriter response);
 
 private:
     DatabaseConnection& dbConn;

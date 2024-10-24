@@ -1,27 +1,31 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { motion } from "framer-motion";
 import { Search, Eye } from "lucide-react";
 
-const orderData = [
-	{ id: "ORD001", customer: "John Doe", total: 235.4, status: "Delivered", date: "2023-07-01" },
-	{ id: "ORD002", customer: "Jane Smith", total: 412.0, status: "Processing", date: "2023-07-02" },
-	{ id: "ORD003", customer: "Bob Johnson", total: 162.5, status: "Shipped", date: "2023-07-03" },
-	{ id: "ORD004", customer: "Alice Brown", total: 750.2, status: "Pending", date: "2023-07-04" },
-	{ id: "ORD005", customer: "Charlie Wilson", total: 95.8, status: "Delivered", date: "2023-07-05" },
-	{ id: "ORD006", customer: "Eva Martinez", total: 310.75, status: "Processing", date: "2023-07-06" },
-	{ id: "ORD007", customer: "David Lee", total: 528.9, status: "Shipped", date: "2023-07-07" },
-	{ id: "ORD008", customer: "Grace Taylor", total: 189.6, status: "Delivered", date: "2023-07-08" },
-];
+// const orderData = [
+// 	{ id: "ORD001", customer: "John Doe", total: 235.4, status: "Delivered", date: "2023-07-01" },
+// 	{ id: "ORD002", customer: "Jane Smith", total: 412.0, status: "Processing", date: "2023-07-02" },
+// 	{ id: "ORD003", customer: "Bob Johnson", total: 162.5, status: "Shipped", date: "2023-07-03" },
+// 	{ id: "ORD004", customer: "Alice Brown", total: 750.2, status: "Pending", date: "2023-07-04" },
+// 	{ id: "ORD005", customer: "Charlie Wilson", total: 95.8, status: "Delivered", date: "2023-07-05" },
+// 	{ id: "ORD006", customer: "Eva Martinez", total: 310.75, status: "Processing", date: "2023-07-06" },
+// 	{ id: "ORD007", customer: "David Lee", total: 528.9, status: "Shipped", date: "2023-07-07" },
+// 	{ id: "ORD008", customer: "Grace Taylor", total: 189.6, status: "Delivered", date: "2023-07-08" },
+// ];
 
-const OrdersTable = () => {
+const OrdersTable = ({orders}) => {
 	const [searchTerm, setSearchTerm] = useState("");
-	const [filteredOrders, setFilteredOrders] = useState(orderData);
+	const [filteredOrders, setFilteredOrders] = useState(orders);
+
+	useEffect(() => {
+		setFilteredOrders(orders);
+	}, [orders]);
 
 	const handleSearch = (e) => {
 		const term = e.target.value.toLowerCase();
 		setSearchTerm(term);
-		const filtered = orderData.filter(
-			(order) => order.id.toLowerCase().includes(term) || order.customer.toLowerCase().includes(term)
+		const filtered = orders.filter(
+			(order) => order.id.toString().includes(term) || order.nombre.toLowerCase().includes(term) || order.sku.toLowerCase().includes(term)
 		);
 		setFilteredOrders(filtered);
 	};
@@ -52,22 +56,40 @@ const OrdersTable = () => {
 					<thead>
 						<tr>
 							<th className='px-6 py-3 text-left text-xs font-medium text-gray-400 uppercase tracking-wider'>
-								Order ID
+								Pedido ID
 							</th>
 							<th className='px-6 py-3 text-left text-xs font-medium text-gray-400 uppercase tracking-wider'>
-								Customer
+								ID Producto
 							</th>
 							<th className='px-6 py-3 text-left text-xs font-medium text-gray-400 uppercase tracking-wider'>
-								Total
+								Nombre
 							</th>
 							<th className='px-6 py-3 text-left text-xs font-medium text-gray-400 uppercase tracking-wider'>
-								Status
+								SKU
 							</th>
 							<th className='px-6 py-3 text-left text-xs font-medium text-gray-400 uppercase tracking-wider'>
-								Date
+								Cantidad
 							</th>
 							<th className='px-6 py-3 text-left text-xs font-medium text-gray-400 uppercase tracking-wider'>
-								Actions
+								Costo
+							</th>
+							<th className='px-6 py-3 text-left text-xs font-medium text-gray-400 uppercase tracking-wider'>
+								Precio sin IVA
+							</th>
+							<th className='px-6 py-3 text-left text-xs font-medium text-gray-400 uppercase tracking-wider'>
+								Precio con IVA
+							</th>
+							<th className='px-6 py-3 text-left text-xs font-medium text-gray-400 uppercase tracking-wider'>
+								Precio minorista
+							</th>
+							<th className='px-6 py-3 text-left text-xs font-medium text-gray-400 uppercase tracking-wider'>
+								Precio mayorista
+							</th>
+							<th className='px-6 py-3 text-left text-xs font-medium text-gray-400 uppercase tracking-wider'>
+								Precio venta
+							</th>
+							<th className='px-6 py-3 text-left text-xs font-medium text-gray-400 uppercase tracking-wider'>
+								Precio venta minimo
 							</th>
 						</tr>
 					</thead>
@@ -75,7 +97,7 @@ const OrdersTable = () => {
 					<tbody className='divide divide-gray-700'>
 						{filteredOrders.map((order) => (
 							<motion.tr
-								key={order.id}
+								// key={order.id_producto}
 								initial={{ opacity: 0 }}
 								animate={{ opacity: 1 }}
 								transition={{ duration: 0.3 }}
@@ -84,32 +106,39 @@ const OrdersTable = () => {
 									{order.id}
 								</td>
 								<td className='px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-100'>
-									{order.customer}
+									{order.id_producto}
 								</td>
 								<td className='px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-100'>
-									${order.total.toFixed(2)}
+									{order.nombre}
 								</td>
-								<td className='px-6 py-4 whitespace-nowrap text-sm text-gray-300'>
-									<span
-										className={`px-2 inline-flex text-xs leading-5 font-semibold rounded-full ${
-											order.status === "Delivered"
-												? "bg-green-100 text-green-800"
-												: order.status === "Processing"
-												? "bg-yellow-100 text-yellow-800"
-												: order.status === "Shipped"
-												? "bg-blue-100 text-blue-800"
-												: "bg-red-100 text-red-800"
-										}`}
-									>
-										{order.status}
-									</span>
+								<td className='px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-100'>
+									{order.sku}
 								</td>
-								<td className='px-6 py-4 whitespace-nowrap text-sm text-gray-300'>{order.date}</td>
-								<td className='px-6 py-4 whitespace-nowrap text-sm text-gray-300'>
-									<button className='text-indigo-400 hover:text-indigo-300 mr-2'>
-										<Eye size={18} />
-									</button>
+								<td className='px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-100'>
+									{order.cantidad}
 								</td>
+								<td className='px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-100'>
+									${order.costo.toFixed(2)}
+								</td>
+								<td className='px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-100'>
+									${order.precio_sin_iva.toFixed(2)}
+								</td>
+								<td className='px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-100'>
+									${order.precio_con_iva.toFixed(2)}
+								</td>
+								<td className='px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-100'>
+									${order.precio_minorista.toFixed(2)}
+								</td>
+								<td className='px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-100'>
+									${order.precio_mayorista.toFixed(2)}
+								</td>
+								<td className='px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-100'>
+									${order.precio_venta.toFixed(2)}
+								</td>
+								<td className='px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-100'>
+									${order.precio_venta_minimo.toFixed(2)}
+								</td>
+								
 							</motion.tr>
 						))}
 					</tbody>

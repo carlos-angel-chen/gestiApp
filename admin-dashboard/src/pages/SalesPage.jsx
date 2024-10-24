@@ -20,6 +20,8 @@ const SalesPage = () => {
     const [totalSales, setTotalSales] = useState(0);
     const [salesData, setSalesData] = useState([]);
     const [salesTable, setSalesTable] = useState([]);
+    const [avgPesos, setAvgPesos] = useState(0);
+    const [avgUsd, setAvgUsd] = useState(0);
     const navigate = useNavigate();
 
     const fetchData = async () => {
@@ -37,6 +39,16 @@ const SalesPage = () => {
         const salesTableResponse = await fetch('http://localhost:9080/ventas');
         const salesTableData = await salesTableResponse.json();
         setSalesTable(salesTableData);
+
+        // Llamada para obtener promedio de ventas pesos
+        const avgPesosResponse = await fetch('http://localhost:9080/calculus/avg_precio_final_pesos');
+        const avgPesosData = await avgPesosResponse.json();
+        setAvgPesos(avgPesosData.avgPrecioFinalPesos);
+
+        // Llamada para obtener promedio de ventas usd
+        const avgUsdResponse = await fetch('http://localhost:9080/calculus/avg_precio_final_usd');
+        const avgUsdData = await avgUsdResponse.json();
+        setAvgUsd(avgUsdData.avgPrecioFinalUsd);
     };
 
     useEffect(() => {
@@ -49,16 +61,22 @@ const SalesPage = () => {
 
             <main className='max-w-7x1 mx-auto py-6 px-4 lg:px-8'>
                 <motion.div
-                    className='grid grid-cols-1 gap-5 sm:grid-cols-2 lg:grid-cols-3 mb-8'
+                    className='grid grid-cols-1 gap-5 sm:grid-cols-2 lg:grid-cols-4 mb-8'
                     initial={{ opacity: 0, y: 20 }}
                     animate={{ opacity: 1, y: 0 }}
                     transition={{ duration: 1}}
                 >
                     <StatCard name='Total Ingresos' icon={DollarSign} value={`$ ${totalSales.toFixed(2)}`} color='#6366F1' />
 					<StatCard
-						name='Promedio de ventas'
+						name='Promedio de ventas Pesos'
 						icon={ShoppingCart}
-						value={salesStats.averageOrderValue}
+						value={avgPesos.toFixed(2)}
+						color='#10B981'
+					/>
+                    <StatCard
+						name='Promedio de ventas USD'
+						icon={ShoppingCart}
+						value={avgUsd.toFixed(2)}
 						color='#10B981'
 					/>
                     <StatCard

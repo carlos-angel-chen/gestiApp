@@ -188,3 +188,63 @@ void CalculusController::getMaxPedidoId(const Rest::Request& request, Http::Resp
         response.send(Http::Code::Internal_Server_Error, errorResponse.dump());
     }
 }
+
+void CalculusController::getTotalPedidos(const Rest::Request& request, Http::ResponseWriter response) {
+    try{
+        auto total = calculusService.getTotalPedidos();
+        json jsonResponse = {{"totalPedidos", total}};
+        response.headers()
+            .add<Http::Header::AccessControlAllowOrigin>("*")
+            .add<Http::Header::AccessControlAllowMethods>("GET, POST, PUT, DELETE, OPTIONS")
+            .add<Http::Header::AccessControlAllowHeaders>("Content-Type, Accept");
+        response.send(Http::Code::Ok, jsonResponse.dump());
+    } 
+    catch( const std::exception& e){
+        json errorResponse = {{"error", "Error al obtener el total de pedidos"}};
+        response.headers()
+            .add<Http::Header::AccessControlAllowOrigin>("*")
+            .add<Http::Header::AccessControlAllowMethods>("GET, POST, PUT, DELETE, OPTIONS")
+            .add<Http::Header::AccessControlAllowHeaders>("Content-Type, Accept");
+        response.send(Http::Code::Internal_Server_Error, errorResponse.dump());
+    }
+}
+
+void CalculusController::getAvgPrecioFinalPesos(const Rest::Request& request, Http::ResponseWriter response) {
+    try{
+        auto avg = calculusService.getAvgPrecioFinalPesos();
+        json jsonResponse = {{"avgPrecioFinalPesos", avg}};
+        response.headers()
+            .add<Http::Header::AccessControlAllowOrigin>("*")
+            .add<Http::Header::AccessControlAllowMethods>("GET, POST, PUT, DELETE, OPTIONS")
+            .add<Http::Header::AccessControlAllowHeaders>("Content-Type, Accept");
+        response.send(Http::Code::Ok, jsonResponse.dump());
+    } 
+    catch( const std::exception& e){
+        json errorResponse = {{"error", "Error al obtener el precio final promedio en pesos"}};
+        response.headers()
+            .add<Http::Header::AccessControlAllowOrigin>("*")
+            .add<Http::Header::AccessControlAllowMethods>("GET, POST, PUT, DELETE, OPTIONS")
+            .add<Http::Header::AccessControlAllowHeaders>("Content-Type, Accept");
+        response.send(Http::Code::Internal_Server_Error, errorResponse.dump());
+    }
+}
+
+void CalculusController::getAvgPrecioFinalUsd(const Rest::Request& request, Http::ResponseWriter response) {
+    try{
+        auto avg = calculusService.getAvgPrecioFinalUsd();
+        json jsonResponse = {{"avgPrecioFinalUsd", avg}};
+        response.headers()
+            .add<Http::Header::AccessControlAllowOrigin>("*")
+            .add<Http::Header::AccessControlAllowMethods>("GET, POST, PUT, DELETE, OPTIONS")
+            .add<Http::Header::AccessControlAllowHeaders>("Content-Type, Accept");
+        response.send(Http::Code::Ok, jsonResponse.dump());
+    } 
+    catch( const std::exception& e){
+        json errorResponse = {{"error", "Error al obtener el precio final promedio en dólares"}};
+        response.headers()
+            .add<Http::Header::AccessControlAllowOrigin>("*")
+            .add<Http::Header::AccessControlAllowMethods>("GET, POST, PUT, DELETE, OPTIONS")
+            .add<Http::Header::AccessControlAllowHeaders>("Content-Type, Accept");
+        response.send(Http::Code::Internal_Server_Error, errorResponse.dump());
+    }
+}
