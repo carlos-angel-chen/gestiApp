@@ -1,11 +1,13 @@
 import { useState, useEffect } from "react";
 import { motion } from "framer-motion";
 import { Search, Edit, Trash2 } from "lucide-react";
+import { useNavigate } from "react-router-dom";
 
 
 const ClientsTable = ({ totalClients }) => {
     const [searchTerm, setSearchTerm] = useState("");
     const [filteredClients, setFilteredClients] = useState(totalClients);
+    const navigate = useNavigate();
 
     useEffect(() => {
         setFilteredClients(totalClients);  // Sincroniza el estado al recibir los productos
@@ -20,6 +22,26 @@ const ClientsTable = ({ totalClients }) => {
         setFilteredClients(filtered);
     };
 
+    const deleteClient = async (id) => {
+        try {
+            const response = await fetch(`http://localhost:9080/clientes/${id}`, {
+                method: 'DELETE',
+            });
+
+            if (response.ok) {
+                alert('Cliente eliminado con éxito');
+                setFilteredClients(filteredClients.filter(client => client.id !== id));
+            } else {
+                alert('Error al eliminar el cliente');
+            }
+        } catch (error) {
+            console.error('Error al eliminar el cliente:', error);
+        }
+    };
+
+    const handleEdit = (client) => {
+        navigate('/edit-client', { state: { client } }); // Navegar con los datos del cliente
+    };
 
     return (
         <motion.div
@@ -134,10 +156,16 @@ const ClientsTable = ({ totalClients }) => {
 								</td>
 
 								<td className='px-6 py-4 whitespace-nowrap text-sm text-gray-300'>
-                                <button className="text-indigo-400 hover:text-indigo-300 mr-2">
+                                    <button 
+                                        className="text-indigo-400 hover:text-indigo-300 mr-2"
+                                        onClick={() => handleEdit(client)}
+                                    >
                                         <Edit size={18} />
                                     </button>
-                                    <button className="text-red-400 hover:text-red-300">
+                                    <button 
+                                        className="text-red-400 hover:text-red-300"
+                                        onClick={() => deleteClient(client.id)}
+                                    >
                                         <Trash2 size={18} />
                                     </button>
 								</td>

@@ -1,6 +1,7 @@
 import { motion } from "framer-motion";
 import { Edit, Search, Trash2 } from "lucide-react";
 import { useState, useEffect } from "react";
+import { useNavigate } from "react-router-dom";
 
 // const PRODUCT_DATA = [
 // 	{ id: 1, name: "Wireless Earbuds", category: "Electronics", price: 59.99, stock: 143, sales: 1200 },
@@ -13,6 +14,7 @@ import { useState, useEffect } from "react";
 const ProductsTable = ({allProducts}) => {
     const [searchTerm, setSearchTerm] = useState('');
     const [filteredProducts, setFilteredProducts] = useState(allProducts);
+    const navigate = useNavigate();
 
     useEffect(() => {
         setFilteredProducts(allProducts);  // Sincroniza el estado al recibir los productos
@@ -23,6 +25,27 @@ const ProductsTable = ({allProducts}) => {
         setSearchTerm(term);
         const filtered = allProducts.filter(product => product.nombre.toLowerCase().includes(term) || product.sku.toLowerCase().includes(term));
         setFilteredProducts(filtered);
+    };
+
+    const deleteProduct = async (id) => {
+        try {
+            const response = await fetch(`http://localhost:9080/productos/${id}`, {
+                method: 'DELETE',
+            });
+
+            if (response.ok) {
+                alert('Producto eliminado con éxito');
+                setFilteredProducts(filteredProducts.filter(product => product.id !== id));
+            } else {
+                alert('Error al eliminar el producto');
+            }
+        } catch (error) {
+            console.error('Error al eliminar el producto:', error);
+        }
+    };
+
+    const handleEdit = (product) => {
+        navigate('/edit-product', { state: { product } }); // Navegar con los datos del cliente
     };
 
     return (
@@ -136,10 +159,16 @@ const ProductsTable = ({allProducts}) => {
                                     {product.precio_venta_minimo.toFixed(2)}
                                 </td>
                                 <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-300">
-                                    <button className="text-indigo-400 hover:text-indigo-300 mr-2">
+                                    <button 
+                                        className="text-indigo-400 hover:text-indigo-300 mr-2"
+                                        onClick={() => handleEdit(product)}
+                                    >
                                         <Edit size={18} />
                                     </button>
-                                    <button className="text-red-400 hover:text-red-300">
+                                    <button 
+                                        className="text-red-400 hover:text-red-300"
+                                        onClick={() => deleteProduct(product.id)}
+                                    >
                                         <Trash2 size={18} />
                                     </button>
                                 </td>

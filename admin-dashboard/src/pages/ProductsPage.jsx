@@ -19,35 +19,42 @@ const ProductsPage = () => {
 
 
     const fetchDataSequentially = async () => {
+        const delay = (ms) => new Promise(resolve => setTimeout(resolve, ms));
         try{
             // Llamada para obtener total de productos
             const productsResponse = await fetch('http://localhost:9080/calculus/total_products');
             const productsData = await productsResponse.json();
             setTotalProducts(productsData.totalProducts);
+            await delay(100);
 
             // Llamada para obtener total de ventas
             const salesResponse = await fetch('http://localhost:9080/calculus/total_sales');
             const salesData = await salesResponse.json();
             setTopSelling(salesData.totalSales);
+            await delay(100);
 
             // Llamada para obtener alertas de stock
             const stockResponse = await fetch('http://localhost:9080/calculus/stock_alert');
             const stockData = await stockResponse.json();
             setLowStock(stockData.stockAlert);
+            await delay(100);
 
             // Llamada para obtener datos de categorias
             const categoryResponse = await fetch('http://localhost:9080/calculus/category_sales');
             const categoryData = await categoryResponse.json();
             setCategoryData(categoryData);
+            await delay(100);
 
             // Llamada para obtener datos de ventas
             const monthlySalesResponse = await fetch('http://localhost:9080/calculus/monthly_sales');
             const monthlySalesData = await monthlySalesResponse.json();
             setSalesData(monthlySalesData);
+            await delay(100);
 
             const allProductsResponse = await fetch('http://localhost:9080/productos');
             const allProductsData = await allProductsResponse.json();
             setAllProducts(allProductsData);
+            await delay(100);
 
         } catch (error) {
             console.error('Error fetching data:', error);

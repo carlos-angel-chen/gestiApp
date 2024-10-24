@@ -7,6 +7,8 @@ import AddClientForm from "./components/clients/AddClientForm"
 import SalesPage from "./pages/SalesPage"
 import AddSaleForm from "./components/sales/AddSaleForm"
 import OrdersPage from "./pages/OrdersPage"
+import EditClientForm from "./components/clients/EditClientForm"
+import EditProductForm from "./components/products/EditProductForm"
 
 function App() {
   const location = useLocation();
@@ -33,6 +35,8 @@ function App() {
         <Route path="/sales" element={<SalesPage />} />
         <Route path="/nueva-venta" element={<AddSaleForm />} />
         <Route path="/orders" element={<OrdersPage />} />
+        <Route path="/edit-client" element={<EditClientForm />} />
+        <Route path="/edit-product" element={<EditProductForm />} />
       </Routes>
     </div>
   )

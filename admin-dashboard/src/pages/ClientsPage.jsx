@@ -30,12 +30,14 @@ const ClientsPage = () => {
     const navigate = useNavigate();
 
     const fetchData = async () => {
+        const delay = (ms) => new Promise(resolve => setTimeout(resolve, ms));
         try{
             // Llamada para obtener total de clientes
             const allClientsResponse = await fetch('http://localhost:9080/clientes');
             const allClientsData = await allClientsResponse.json();
             setTotalClients(allClientsData);
             setTotalClientsLength(allClientsData.length);
+            await delay(100);
 
         } catch (error) {
             console.error('Error fetching data:', error);
