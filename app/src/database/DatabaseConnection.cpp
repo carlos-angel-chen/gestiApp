@@ -1,6 +1,9 @@
 #include "../include/database/DatabaseConnection.h"
 #include <iostream>
 
+// Constructor de la clase DatabaseConnection: se encarga de
+// inicializar los atributos del objeto cuando se crea una instancia 
+// de DatabaseConnection
 DatabaseConnection::DatabaseConnection(const std::string& connStr) : connectionString(connStr), conn(nullptr) {}
 
 DatabaseConnection::~DatabaseConnection() {
@@ -25,12 +28,6 @@ bool DatabaseConnection::connect() {
 }
 
 void DatabaseConnection::disconnect() {
-    // if (conn) {
-    //     conn->disconnect();
-    //     delete conn;
-    //     conn = nullptr;
-    //     std::cout << "Disconnected from database." << std::endl;
-    // }
     if (conn) {
         conn.reset();  // Esto libera la conexión automáticamente
         std::cout << "Disconnected from database." << std::endl;

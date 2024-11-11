@@ -8,6 +8,8 @@
 
 class ProductosService {
 public:
+    // Constructor de la clase ProductosService, db es una referencia a DatabaseConnection
+    // "explicit" Previene la conversión implícita de tipos, asegurando que el constructor solo pueda ser llamado con un DatabaseConnection
     explicit ProductosService(DatabaseConnection& db);
 
     std::vector<Productos> getAllProducts();
@@ -20,6 +22,8 @@ public:
     std::vector<std::string> getColumns();
 
 private:
+    // Proporciona acceso a la base de datos para realizar consultas SQL.
+    // no se crea una nueva instancia, sino que se utiliza una existente, asi evito la sobrecarga de múltiples conexiones
     DatabaseConnection& dbConn;
 };
 

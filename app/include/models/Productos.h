@@ -21,8 +21,11 @@ public:
     float precio_mayorista;
     float precio_venta_minimo;
 
+    // Defino construcctor por defecto de la clase
+    // No hace ninguna inicializacion, solo crea un objeto "Productos" vacio
     Productos() = default;
 
+    // Constructor parametrizado, permite inicializar un objeto "Productos" con valores específicos
     Productos(
         int id,
         const std::string& sku,
@@ -38,6 +41,9 @@ public:
         float precio_mayorista,
         float precio_venta_minimo
     );
+
+    // "friend" declara que las funciones son "amigas" de "Productos"
+    // me permite accedor a los atributos privados o protegidos de la clase
 
     // Métodos adicionales si son necesarios (como validaciones o transformaciones)
     // Sobrecarga de la conversión a JSON

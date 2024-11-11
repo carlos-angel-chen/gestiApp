@@ -1,26 +1,3 @@
-// // src/main.cpp
-// #include "TodoController.hpp"
-// #include "AppComponent.hpp"
-
-// int main() {
-//     Pistache::Port port(9080);
-//     Pistache::Address addr(Pistache::Ipv4::any(), port);
-
-//     AppComponent components(addr);
-//     TodoController controller(components);
-
-//     controller.init();
-//     controller.start();
-
-//     // Esperar a que el servidor se detenga
-//     std::cout << "Server running on port " << port << std::endl;
-//     std::this_thread::sleep_for(std::chrono::hours(24));
-
-//     controller.shutdown();
-
-//     return 0;
-// }
-
 #include <pistache/endpoint.h>
 #include <pistache/router.h>
 #include <pistache/http_headers.h>
@@ -29,15 +6,6 @@
 
 using namespace Pistache;
 using namespace Pistache::Rest;
-
-// // Función para manejar las solicitudes OPTIONS (CORS Preflight)
-// void handleOptions(const Rest::Request& request, Http::ResponseWriter response) {
-//     response.headers()
-//         .add<Http::Header::AccessControlAllowOrigin>("*")
-//         .add<Http::Header::AccessControlAllowMethods>("GET, POST, PUT, DELETE, OPTIONS")
-//         .add<Http::Header::AccessControlAllowHeaders>("Content-Type, Accept");
-//     response.send(Http::Code::Ok);
-// }
 
 int main() {
     // Configuración de la conexión a la base de datos
@@ -60,9 +28,6 @@ int main() {
 
     // Configurar las rutas
     Rest::Router router;
-
-    // Manejar solicitudes OPTIONS para CORS
-    // Routes::Options(router, "/productos", Routes::bind(&handleOptions));
 
     setupRoutes(router, dbConn);
 

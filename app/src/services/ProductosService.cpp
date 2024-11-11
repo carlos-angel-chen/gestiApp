@@ -1,11 +1,14 @@
 #include <iostream>
 #include "../include/services/ProductosService.h"
 
+// Inicializo el objeto ProductosService con una referencia a un objeto DatabaseConnection
+// Asigno la referencia de la conexión de base de datos db al atributo dbConn
 ProductosService::ProductosService(DatabaseConnection& db) : dbConn(db) {}
 
 std::vector<Productos> ProductosService::getAllProducts() {
     try
     {
+        // Obtengo un puntero a la conexión de la base de datos
         pqxx::work txn(*dbConn.getConnection());
         std::string query = R"(SELECT
                 producto.id,

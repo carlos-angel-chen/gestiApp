@@ -17,6 +17,7 @@ void handleOptions(const Pistache::Rest::Request& request, Pistache::Http::Respo
 }
 
 void setupRoutes(Pistache::Rest::Router& router, DatabaseConnection& dbConn) {
+    // creo objetos de los controladores y los gestiono usando puntero inteligente
     auto productosController = std::make_shared<ProductosController>(dbConn);
     auto clientesController = std::make_shared<ClientesController>(dbConn);
     auto logisticaController = std::make_shared<LogisticaController>(dbConn);
@@ -26,7 +27,8 @@ void setupRoutes(Pistache::Rest::Router& router, DatabaseConnection& dbConn) {
     auto calculusController = std::make_shared<CalculusController>(dbConn);
 
     using namespace Pistache::Rest;
-
+    // registro las rutas para los metodos http
+    // "bind" enlazo un metodo de un controlador a una ruta
     // PRODUCTOS
     Routes::Get(router, "/productos", Routes::bind(&ProductosController::getAllProducts, productosController));
     Routes::Get(router, "/productos/id/:id", Routes::bind(&ProductosController::getProductById, productosController));
@@ -37,7 +39,7 @@ void setupRoutes(Pistache::Rest::Router& router, DatabaseConnection& dbConn) {
     // Routes::Delete(router, "/productos/SKU/:sku", Routes::bind(&ProductosController::deleteProductBySKU, productosController));
     Routes::Get(router, "/productos/columns", Routes::bind(&ProductosController::getColumns, productosController));
 
-    // Asegúrate de no duplicar las rutas OPTIONS
+    // estas rutas me aseguran que las solicitudes preflight CORS se manejen correctamente
     Routes::Options(router, "/productos", Routes::bind(&handleOptions));
     Routes::Options(router, "/productos/:id", Routes::bind(&handleOptions));
     Routes::Options(router, "/productos/id/:id", Routes::bind(&handleOptions));

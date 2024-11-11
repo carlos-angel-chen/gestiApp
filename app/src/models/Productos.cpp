@@ -1,5 +1,7 @@
 #include "../include/models/Productos.h"
 
+// Implemento el constructor de la clase "Productos"
+// y los parametros para inicializar los atributos del objeto
 Productos::Productos(
     int id,
     const std::string& sku,
@@ -49,6 +51,7 @@ void to_json(nlohmann::json& j, const Productos& p) {
 }
 
 // Implementación de la función from_json (opcional si quieres convertir de JSON a Producto)
+// j.at("id").get_to(p.id); esto equivale a que busca la key en el json y le asigna el valor
 void from_json(const nlohmann::json& j, Productos& p) {
     j.at("id").get_to(p.id);
     j.at("sku").get_to(p.sku);
