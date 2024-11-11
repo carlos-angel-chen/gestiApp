@@ -18,6 +18,17 @@ sudo apt install pgadmin4
 
 sudo apt install pgadmin4-desktop
 ```
+2. Instalar Pistache REST Framework. 
+```
+git clone https://github.com/pistacheio/pistache.git
+cd pistache
+meson setup build
+meson install -C build
+```
+3. Biblioteca para establecer conexion entre Backend y Postgresql
+```
+sudo apt-get install libpqxx-dev libpq-dev
+```
 
 ## Arquitectura principal
 ![Arquitectura](doc/arq.png)
