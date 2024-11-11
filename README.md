@@ -13,9 +13,7 @@ Primero es necesario que estes utilizando una ditribucion de Linux. Luego es nec
 1. Instalar Postgresql 
 ```
 sudo apt-get install postgresql
-
 sudo apt install pgadmin4
-
 sudo apt install pgadmin4-desktop
 ```
 2. Instalar Pistache REST Framework. 
@@ -29,7 +27,50 @@ meson install -C build
 ```
 sudo apt-get install libpqxx-dev libpq-dev
 ```
+4. Instalo node.js y las bibliotecas que se van a utilizar para el Frontend
+```
+sudo apt-get install node.js
+sudo apt install npm
 
+nodejs -v
+npm -v
+
+#creo carpeta admin-dashboard
+cd admin-dashboard
+npm create vite@latest .
+
+# elijo React
+# elijo JavaScript
+
+npm i
+
+npm run dev
+# chequeo que corre el servidor y luego mato la terminal
+
+npm i react-router-dom lucide-react recharts@latest
+npm i framer-motion
+npm install -D tailwindcss postcss autoprefixer
+npx tailwindcss init -p
+```
+
+Hasta aca es todo lo que se necesita para poder utilizarlo. Los siguientes pasos es para poder levantarlo localmente:
+
+5. Clonamos este repo
+```
+git clone https://github.com/carlos-angel-chen/gestiApp.git
+```
+6. Compilamos el proyecto y levantamos el Backend
+```
+cd app/build/
+cmake ..
+make
+./app
+```
+7. Abrimos otra terminal y levantamos el Frontend
+```
+cd admin-dashboard/
+npm run dev
+```
 ## Arquitectura principal
 ![Arquitectura](doc/arq.png)
 
