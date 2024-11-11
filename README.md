@@ -12,5 +12,5 @@ funciona en entorno Linux. En este proyecto se lo realizo utilizando Ubuntu 24.0
 ![Arquitectura](doc/arq.png)
 
 ### Base de datos
-Se utilizo Postgresql como gestor de base de datos relacional. Para el diseño se utilizo [drawdb.app](https://draw.app). En la siguiente imagen se muestra las tablas que se crearon y sus relaciones:
+Se utilizo Postgresql como gestor de base de datos relacional. Para el diseño se utilizo [drawdb.app](https://drawdb.app). En la siguiente imagen se muestra las tablas que se crearon y sus relaciones:
 ![base de datos](doc/db_arq.png)
