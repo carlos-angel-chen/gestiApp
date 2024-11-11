@@ -30,7 +30,7 @@ const PaymentMethodChart = ({ paymentData }) => {
 			animate={{ opacity: 1, y: 0 }}
 			transition={{ delay: 0.4 }}
 		>
-			<h2 className='text-lg font-medium mb-4 text-gray-100'>Sales by Channel</h2>
+			<h2 className='text-lg font-medium mb-4 text-gray-100'>Metodos de Pago</h2>
 
 			<div className='h-80'>
 				<ResponsiveContainer>
