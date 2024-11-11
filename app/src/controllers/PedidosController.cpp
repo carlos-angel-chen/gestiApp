@@ -66,7 +66,7 @@ void PedidosController::createPedido(const Rest::Request& request, Http::Respons
         Pedidos pedido = {
             jsonBody["id"].get<int>(),
             jsonBody["id_producto"].get<int>(),
-            jsonBody["SKU"].get<std::string>(),
+            jsonBody["sku"].get<std::string>(),
             jsonBody["nombre"].get<std::string>(),
             jsonBody["tipo_producto"].get<std::string>(),
             jsonBody["cantidad"].get<int>(),

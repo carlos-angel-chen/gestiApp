@@ -33,7 +33,7 @@ Productos::Productos(
 void to_json(nlohmann::json& j, const Productos& p) {
     j = nlohmann::json{
         {"id", p.id},
-        {"\"SKU\"", p.sku},
+        {"sku", p.sku},
         {"nombre", p.nombre},
         {"tipo_producto", p.tipo_producto},
         {"stock_minimo", p.stock_minimo},
@@ -51,7 +51,7 @@ void to_json(nlohmann::json& j, const Productos& p) {
 // Implementación de la función from_json (opcional si quieres convertir de JSON a Producto)
 void from_json(const nlohmann::json& j, Productos& p) {
     j.at("id").get_to(p.id);
-    j.at("\"SKU\"").get_to(p.sku);
+    j.at("sku").get_to(p.sku);
     j.at("nombre").get_to(p.nombre);
     j.at("tipo_producto").get_to(p.tipo_producto);
     j.at("stock_minimo").get_to(p.stock_minimo);

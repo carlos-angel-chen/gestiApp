@@ -7,10 +7,11 @@ std::vector<Pedidos> PedidosService::getAllPedidos(){
     try
     {
         pqxx::work txn(*dbConn.getConnection());
-        std::string query = R"(SELECT
+        std::string query = R"(
+            SELECT
                 pedido.id,
                 producto.id AS id_producto,
-                producto."SKU",
+                producto.sku,
                 producto.nombre AS nombre,
                 tipo.nombre AS tipo_producto,
                 pedido.cantidad,
@@ -35,7 +36,9 @@ std::vector<Pedidos> PedidosService::getAllPedidos(){
             LEFT JOIN
                 public."Precios" precio
             ON
-                producto.id = precio.id_producto;)";
+                producto.id = precio.id_producto
+            ORDER BY pedido.id ASC;
+                )";
 
         pqxx::result res = txn.exec_params(query);
 
@@ -44,7 +47,7 @@ std::vector<Pedidos> PedidosService::getAllPedidos(){
             Pedidos p = {
                 row["id"].as<int>(),
                 row["id_producto"].as<int>(),
-                row["\"SKU\""].as<std::string>(),
+                row["sku"].as<std::string>(),
                 row["nombre"].as<std::string>(),
                 row["tipo_producto"].as<std::string>(),
                 row["cantidad"].as<int>(),
@@ -75,7 +78,7 @@ std::vector<Pedidos> PedidosService::getPedidoById(int id){
         std::string query = R"(SELECT
                 pedido.id,
                 producto.id AS id_producto,
-                producto."SKU",
+                producto.sku,
                 producto.nombre AS nombre,
                 tipo.nombre AS tipo_producto,
                 pedido.cantidad,
@@ -110,7 +113,7 @@ std::vector<Pedidos> PedidosService::getPedidoById(int id){
             Pedidos p = {
                 row["id"].as<int>(),
                 row["id_producto"].as<int>(),
-                row["\"SKU\""].as<std::string>(),
+                row["sku"].as<std::string>(),
                 row["nombre"].as<std::string>(),
                 row["tipo_producto"].as<std::string>(),
                 row["cantidad"].as<int>(),

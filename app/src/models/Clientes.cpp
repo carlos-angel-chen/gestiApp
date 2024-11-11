@@ -32,7 +32,7 @@ void to_json(nlohmann::json& j, const Clientes& c) {
     j = nlohmann::json{
         {"id", c.id},
         {"razon_social", c.razonSocial},
-        {"\"CUIT\"", c.cuit},
+        {"cuit", c.cuit},
         {"tributacion", c.tributacion},
         {"telefono", c.telefono},
         {"email", c.email},
@@ -49,7 +49,7 @@ void to_json(nlohmann::json& j, const Clientes& c) {
 void from_json(const nlohmann::json& j, Clientes& c) {
     j.at("id").get_to(c.id);
     j.at("razon_social").get_to(c.razonSocial);
-    j.at("\"CUIT\"").get_to(c.cuit);
+    j.at("cuit").get_to(c.cuit);
     j.at("tributacion").get_to(c.tributacion);
     j.at("telefono").get_to(c.telefono);
     j.at("email").get_to(c.email);

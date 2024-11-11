@@ -144,20 +144,20 @@ void VentasService::createVentas(const Ventas& ventas){
     {
         pqxx::work txn(*dbConn.getConnection());
         std::string queryVenta = R"(
-            INSERT INTO public."Ventas" ("id_cliente", "id_pedido", "id_logistica", "fecha", "subtotal", "descuento", "precio_final_usd", "id_metodo_pago", "precio_final_pesos", "observaciones")
+            INSERT INTO public."Ventas" ("descuento", "fecha", "id_cliente", "id_logistica", "id_metodo_pago", "id_pedido", "observaciones", "precio_final_pesos",  "precio_final_usd", "subtotal")
             VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10);
         )";
         txn.exec_params(queryVenta, 
-                        ventas.id_cliente,
-                        ventas.id_pedido,
-                        ventas.id_logistica,
-                        ventas.fecha,
-                        ventas.subtotal,
                         ventas.descuento,
-                        ventas.precio_final_usd,
+                        ventas.fecha,
+                        ventas.id_cliente,
+                        ventas.id_logistica,
                         ventas.id_metodo_pago,
+                        ventas.id_pedido,
+                        ventas.observaciones,
                         ventas.precio_final_pesos,
-                        ventas.observaciones);
+                        ventas.precio_final_usd,
+                        ventas.subtotal);
         txn.commit();
     }
     catch(const std::exception& e)
